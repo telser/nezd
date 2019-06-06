@@ -2,7 +2,7 @@
 #
 # (c) 2007 by Robert Manea <rob dot manea at gmail dot com>
 #
-# KITT Scanner for dzen - a man, a car, a dzen
+# KITT Scanner for nezd - a man, a car, a nezd
 #
 
 
@@ -19,8 +19,8 @@ BG=black
 
 SLEEP=0.1
 
-DZEN=dzen2
-DZENOPTS="-bg $BG -fg $INACTIVE_LED_COLOR"
+NEZD=nezd
+NEZDOPTS="-bg $BG -fg $INACTIVE_LED_COLOR"
 
 #-----------------------------------------------------------------------
 
@@ -68,4 +68,4 @@ while :; do
     j=`expr $j $SIGN 1`
 
     sleep $SLEEP;
-done | $DZEN $DZENOPTS -h `expr $LED_HEIGHT + 4`
+done | $NEZD $NEZDOPTS -h `expr $LED_HEIGHT + 4`

@@ -1,24 +1,24 @@
 ==================================
- dzen, (c) 2007 by Robert Manea
+ nezd, (c) 2007 by Robert Manea
 ==================================
 
 
-Edit config.mk to match your local setup (dzen is installed into
+Edit config.mk to match your local setup (nezd is installed into
 the /usr/local namespace by default).
 
-Afterwards enter the following command to build and install dzen (if
+Afterwards enter the following command to build and install nezd (if
 necessary as root):
 
     make clean install
 
 
-Optionally if you want to use dzen's gadgets:
+Optionally if you want to use nezd's gadgets:
 
     cd gadgets
     make clean install
 
 
-Note:       By default dzen will not be compiled with Xinerama and XPM support.
+Note:       By default nezd will not be compiled with Xinerama and XPM support.
             Uncomment the respective lines in config.mk to change this.
 
 

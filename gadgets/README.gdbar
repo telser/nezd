@@ -7,7 +7,7 @@ from some values you supply to it.
 
 It has the same input semantics as dbar (see README.dbar). In contrast
 to dbar, gdbar draws fully graphical meters which are only useful in
-combination with dzen >= 0.7.0.
+combination with nezd >= 0.7.0.
 
 Options:
 --------

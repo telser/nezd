@@ -1,8 +1,8 @@
 ====================================
- dzen, (c) 2007-2010 by Robert Manea
+ nezd, (c) 2007-2010 by Robert Manea
 ====================================
 
-Dzen is a general purpose messaging, notification and menuing program for X11.
+Nezd is a general purpose messaging, notification and menuing program for X11.
 It was designed to be fast, tiny and scriptable in any language.
 
 
@@ -20,39 +20,39 @@ Features
 
 Requirements
 ------------
-In order to build dzen you need the Xlib header files.
+In order to build nezd you need the Xlib header files.
 
 
 Installation
 ------------
-Edit config.mk to match your local setup (dzen is installed into
+Edit config.mk to match your local setup (nezd is installed into
 the /usr/local namespace by default).
 
-Afterwards enter the following command to build and install dzen (if
+Afterwards enter the following command to build and install nezd (if
 necessary as root):
 
     make clean install
 
 
-Optionally if you want to use dzen's gadgets:
+Optionally if you want to use nezd's gadgets:
 
     cd gadgets
     make clean install
 
 
-Note:       By default dzen will not be compiled with Xinerama and XPM support.
+Note:       By default nezd will not be compiled with Xinerama and XPM support.
             Uncomment the respective lines in config.mk to change this.
 
 
 Contact:
 --------
-Feature requests, patches or anything else related to dzen can be send
+Feature requests, patches or anything else related to nezd can be send
 to: rob dot manea at gmail dot com
 
 
-Running dzen
+Running nezd
 ------------
-dzen accepts a couple of options:
+nezd accepts a couple of options:
 
     -fg     foreground color
     -bg     background color
@@ -81,19 +81,19 @@ dzen accepts a couple of options:
 X resources
 -----------
 
-Dzen is able to read font and color setting from X resources.
+Nezd is able to read font and color setting from X resources.
 As an example you can add following lines to ~/.Xresources
 
-dzen2.font:       -*-fixed-*-*-*-*-*-*-*-*-*-*-*-*
-dzen2.foreground: #22EE11
-dzen2.background: black
+nezd.font:       -*-fixed-*-*-*-*-*-*-*-*-*-*-*-*
+nezd.foreground: #22EE11
+nezd.background: black
 
 
 
 Window layout
 -------------
 
-Dzen's window layout is as follows:
+Nezd's window layout is as follows:
 
      ------------------------------------------
     |        Title window, single line         |
@@ -109,7 +109,7 @@ Dzen's window layout is as follows:
     |                                          |
     `------------------------------------------´
 
-The first line you provide to dzen always goes to the title window, 
+The first line you provide to nezd always goes to the title window, 
 all other consecutive lines will be drawn to the slave window unless
 you explicitly override this with the (5) In-text formating language
 command ^tw().
@@ -132,9 +132,9 @@ A2:  With the default event/action handling the slave window will
      this.
 
 
-Q3:  If I echo some text or cat a file dzen closes itself immediately.
+Q3:  If I echo some text or cat a file nezd closes itself immediately.
 
-A3:  There are 2 different approaches dzen uses to terminate itself, 
+A3:  There are 2 different approaches nezd uses to terminate itself, 
      see next section "Termination".
 
 
@@ -152,7 +152,7 @@ A5:  Yes, you can change both background and foreground colors and
      much more See "(5) In-Text formating language"
 
 
-Q6:  Can I use dzen as a menu?
+Q6:  Can I use nezd as a menu?
 
 A6:  Yes, both vertical and horizontal menus are supported. 
      See "(3) Menu" for further details.
@@ -162,7 +162,7 @@ A6:  Yes, both vertical and horizontal menus are supported.
 
 Termination:
 ------------
-dzen uses two different approaches to terminate itself:
+nezd uses two different approaches to terminate itself:
 
     * Timed termination: if EOF is received -> terminate
         - unless the '-p' option is set
@@ -177,7 +177,7 @@ dzen uses two different approaches to terminate itself:
 
 Return values:
 --------------
-0               -   dzen received EOF
+0               -   nezd received EOF
 1               -   some error occurred, inspect the error message
 user defined    -   set with 'exit:retval' action, see (2)
 
@@ -203,7 +203,7 @@ and down if the content exceeds the window height (default action).
 (2) Option '-e': Events and actions
 -----------------------------------
 
-dzen allows the user to associate actions to events.
+nezd allows the user to associate actions to events.
 
 The command line syntax is as follows:
 -e 'event1=action1:option1:...option<n>,...,action<m>;...;event<l>'
@@ -226,7 +226,7 @@ An example:
     slave window and unhide the title window
 
     button3=exit
-    on button3 event exit dzen
+    on button3 event exit nezd
 
 
 Supported events:
@@ -266,7 +266,7 @@ Supported actions:
 
     exec:command1:..:n  execute all given options
     menuexec            executes selected menu entry
-    exit:retval         exit dzen and return 'retval'
+    exit:retval         exit nezd and return 'retval'
     print:str1:...:n    write all given options to STDOUT
     menuprint           write selected menu entry to STDOUT
     collapse            collapse (roll-up) slave window
@@ -292,7 +292,7 @@ Supported actions:
                         only needed with specific windowmanagers, such as fluxbox
 
 
-Note:   If no events/actions are specified dzen defaults to:
+Note:   If no events/actions are specified nezd defaults to:
 
         Title only mode:
         ----------------
@@ -329,16 +329,16 @@ Note:   If no events/actions are specified dzen defaults to:
 (3) Option '-m', Menu
 ---------------------
 
-Dzen provides two menu modes, vertical and horizontal menus. You can
+Nezd provides two menu modes, vertical and horizontal menus. You can
 access these modes by adding 'v'(ertical) or 'h'(horizontal) to the 
-'-m' option. If nothing is specified dzen defaults to vertical menus.
+'-m' option. If nothing is specified nezd defaults to vertical menus.
 
 Vertical menu, both invocations are equivalent:
-    dzen2 -p -l 4 -m < file
-    dzen2 -p -l 4 -m v < file
+    nezd -p -l 4 -m < file
+    nezd -p -l 4 -m v < file
 
 Horizontal menu:
-    dzen2 -p -l 4 -m h < file
+    nezd -p -l 4 -m h < file
 
 
 All actions beginning with "menu" work on the selected menu entry.
@@ -372,7 +372,7 @@ The way it works is best described by an example:
         date                # output goes to the title window
         dmesg | tail -n 10  # output goes to the slave window
         sleep 1
-  done | dzen2 -l 10 -u
+  done | nezd -l 10 -u
 
 For this to work correctly it is essential to provide exactly the number
 of lines to the slave window as defined by the parameter to '-l'.
@@ -382,7 +382,7 @@ of lines to the slave window as defined by the parameter to '-l'.
 (5) In-text formating & control language:
 -----------------------------------------
 
-This feature allows to dynamically (at runtime) format the text dzen
+This feature allows to dynamically (at runtime) format the text nezd
 displays and control its behaviour.
 
 Currently the following commands are supported:
@@ -457,7 +457,7 @@ Interaction:
                        - 'BTN' denotes the mouse button (1=left, 2=right, 3=middle, etc.) 
                        - 'CMD' denotes the command that should be spawned when the specific
                          area has been clicked with the defined button
-                       - '...' denotes any text or formating commands dzen accepts
+                       - '...' denotes any text or formating commands nezd accepts
                        - '^ca()' without arguments denotes the end of this clickable area
 
                        Example:
@@ -506,7 +506,7 @@ Other:
 
 
 
-These commands can appear anywhere and in any combination in dzen's
+These commands can appear anywhere and in any combination in nezd's
 input. 
 
 The color can be specified either as symbolic name (e.g. red,
@@ -550,57 +550,57 @@ Examples:
 ---------
 
 * Display message and timeout after 10 seconds:
-    (echo "This is a message"; sleep 10) | dzen2 -bg darkred -fg grey80 -fn fixed 
+    (echo "This is a message"; sleep 10) | nezd -bg darkred -fg grey80 -fn fixed 
 
 
 * Display message and never timeout:
-    echo "This is a message"| dzen2 -p
+    echo "This is a message"| nezd -p
 
 
 * Display updating single line message:
-    for i in $(seq 1 20); do A=${A}'='; print $A; sleep 1; done | dzen2
+    for i in $(seq 1 20); do A=${A}'='; print $A; sleep 1; done | nezd
 
 
 * Display header and a message with multiple lines:
-    (echo Header; cal; sleep 20) | dzen2 -l 8
+    (echo Header; cal; sleep 20) | nezd -l 8
 
     Displays "Header" in the title window and the output of cal in the 8
     lines high slave window.
 
 
 * Display updating messages:
-    (echo Header; while true; do echo test$((i++)); sleep 1; done) | dzen2 -l 12
+    (echo Header; while true; do echo test$((i++)); sleep 1; done) | nezd -l 12
 
     The slave window will update contents if new input has arrived.
 
 
 * Display log files:
-    (su -c "echo LOGFILENAME; tail -f /var/log/messages") | dzen2 -l 20 -x 100 -y 300 -w 500
+    (su -c "echo LOGFILENAME; tail -f /var/log/messages") | nezd -l 20 -x 100 -y 300 -w 500
 
 
 * Monthly schedule with remind:
-    (echo Monthly Schedule; remind -c1 -m) | dzen2 -l 52 -w 410 -p -fn lime -bg '#e0e8ea' -fg black -x 635
+    (echo Monthly Schedule; remind -c1 -m) | nezd -l 52 -w 410 -p -fn lime -bg '#e0e8ea' -fg black -x 635
 
 
 * Simple menu:
-    echo "Applications" | dzen2 -l 4 -p -m < menufile
+    echo "Applications" | nezd -l 4 -p -m < menufile
 
 
 * Horizontal menu without any files:
-    {echo Menu; echo -e "xterm\nxclock\nxeyes\nxfontsel"} | dzen2 -l 4 -m h -p
+    {echo Menu; echo -e "xterm\nxclock\nxeyes\nxfontsel"} | nezd -l 4 -m h -p
 
 
 * Extract PIDs from the process table:
 
-    {echo Procs; ps -a} | dzen2 -m -l 12 -p \
+    {echo Procs; ps -a} | nezd -m -l 12 -p \
     -e 'button1=menuprint;button3=exit;button4=scrollup:3;button5=scrolldown:3;entertitle=uncollapse;leaveslave=collapse' \
             | awk '{print $1}'
 
 
-* Dzen as xmonad (see http://xmonad.org) statusbar:
+* Nezd as xmonad (see http://xmonad.org) statusbar:
 
-    status.sh | dzen2 -ta r -fn '-*-profont-*-*-*-*-11-*-*-*-*-*-iso8859' -bg '#aecf96' -fg black \
-        -p -e 'sigusr1=raise;sigusr2=lower;onquit=exec:rm /tmp/dzen2-pid;button3=exit' & echo $! > /tmp/dzen2-pid
+    status.sh | nezd -ta r -fn '-*-profont-*-*-*-*-11-*-*-*-*-*-iso8859' -bg '#aecf96' -fg black \
+        -p -e 'sigusr1=raise;sigusr2=lower;onquit=exec:rm /tmp/nezd-pid;button3=exit' & echo $! > /tmp/nezd-pid
 
 
 

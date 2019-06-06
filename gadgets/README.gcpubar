@@ -4,7 +4,7 @@
 
 gcpubar is a CPU utilization meter for Linux. It relies on the existence
 of the "/proc/stat" file and generateѕ fully graphical meters viewable with
-dzen >= 0.7.0.
+nezd >= 0.7.0.
 
 Command line options:
 ---------------------

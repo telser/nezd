@@ -5,7 +5,7 @@
  *
  */
 
-#include "dzen.h"
+#include "nezd.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,7 +56,7 @@ spawn(const char *arg) {
 		if(fork() == 0) {
 			setsid();
 			execl(shell, shell, "-c", arg, (char *)NULL);
-			fprintf(stderr, "dzen: execl '%s -c %s'", shell, arg);
+			fprintf(stderr, "nezd: execl '%s -c %s'", shell, arg);
 			perror(" failed");
 		}
 		exit(0);

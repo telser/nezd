@@ -1,5 +1,5 @@
 /*  
-	gcpubar - graphical cpu usage bar, to be used with dzen
+	gcpubar - graphical cpu usage bar, to be used with nezd
 
 	Copyright (C) 2007 by Robert Manea, <rob dot manea at gmail dot com>
 

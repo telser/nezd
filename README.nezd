@@ -1,15 +1,15 @@
 ^fg(lightgreen)^r(190x4)^fg(#6fbf47)^r(38x4)^fg(darkgreen)^r(9x4)
-^fg(#6fbf47)  dzen, (c) 2007 by Robert Manea
+^fg(#6fbf47)  nezd, (c) 2007 by Robert Manea
 ^fg(darkgreen)^r(9x4)^fg(#6fbf47)^r(38x4)^fg(lightgreen)^r(190x4)
 
 A general purpose messaging, notification and menu program
 
 
 The "gadgets" subdirectory contains some tools that you can 
-use in combination with dzen.
+use in combination with nezd.
 
 Script archive with a collection of interesting ideas:
-^fg(lightblue)  http://gotmor.googlepages.com/dzenscriptarchive
+^fg(lightblue)  http://gotmor.googlepages.com/nezdscriptarchive
 
 
 
@@ -39,39 +39,39 @@ Script archive with a collection of interesting ideas:
 
 ^fg(#6fbf47)Requirements
 ^fg(#6fbf47)------------
-In order to build dzen you need the Xlib header files.
+In order to build nezd you need the Xlib header files.
 
 
 ^fg(#6fbf47)Installation
 ^fg(#6fbf47)------------
-Edit config.mk to match your local setup (dzen is installed into
+Edit config.mk to match your local setup (nezd is installed into
 the /usr/local namespace by default).
 
-Afterwards enter the following command to build and install dzen (if
+Afterwards enter the following command to build and install nezd (if
 necessary as root):
 
     ^fg(grey85)make clean install
 
 
-Optionally if you want to use dzen's gadgets:
+Optionally if you want to use nezd's gadgets:
 
     ^fg(grey85)cd gadgets
     ^fg(grey85)make clean install
 
 
-^fg(Khaki)Note:       By default dzen will ^fg(red)not^fg(Khaki) be compiled with Xinerama and XPM support.
+^fg(Khaki)Note:       By default nezd will ^fg(red)not^fg(Khaki) be compiled with Xinerama and XPM support.
             ^fg(Khaki)Uncomment the respective lines in config.mk to change this.
 
 
 ^fg(#6fbf47)Contact:
 ^fg(#6fbf47)--------
-Feature requests, patches or anything else related to dzen can be send
+Feature requests, patches or anything else related to nezd can be send
 to: ^fg(Khaki)rob dot manea at gmail dot com
 
 
-^fg(#6fbf47)Running dzen
+^fg(#6fbf47)Running nezd
 ^fg(#6fbf47)------------
-dzen accepts a couple of options:
+nezd accepts a couple of options:
 
     -fg     foreground color
     -bg     background color
@@ -100,19 +100,19 @@ dzen accepts a couple of options:
 ^fg(#6fbf47)X resources
 ^fg(#6fbf47)-----------
 
-Dzen is able to read font and color setting from X resources.
+Nezd is able to read font and color setting from X resources.
 As an example you can add following lines to ~/.Xresources
 
-^fg(Khaki)dzen2.font:       -*-fixed-*-*-*-*-*-*-*-*-*-*-*-*
-^fg(Khaki)dzen2.foreground: #22EE11
-^fg(Khaki)dzen2.background: black
+^fg(Khaki)nezd.font:       -*-fixed-*-*-*-*-*-*-*-*-*-*-*-*
+^fg(Khaki)nezd.foreground: #22EE11
+^fg(Khaki)nezd.background: black
 
 
 
 ^fg(#6fbf47)Window layout
 ^fg(#6fbf47)-------------
 
-Dzen's window layout is as follows:
+Nezd's window layout is as follows:
 
 ^fg(red)     ------------------------------------------
 ^fg(red)    |        Title window, single line         |
@@ -128,7 +128,7 @@ Dzen's window layout is as follows:
 ^fg(#6fbf47)    |                                          |
 ^fg(#6fbf47)    `------------------------------------------´
 
-The first line you provide to dzen always goes to the title window, 
+The first line you provide to nezd always goes to the title window, 
 all other consecutive lines will be drawn to the slave window unless
 you explicitly override this with the ^fg(#6fbf47)(5) In-text formating language
 ^fg()command ^^tw().
@@ -151,9 +151,9 @@ A2:  With the default event/action handling the slave window will
      this.
 
 
-Q3:  If I echo some text or cat a file dzen closes itself immediately.
+Q3:  If I echo some text or cat a file nezd closes itself immediately.
 
-A3:  There are 2 different approaches dzen uses to terminate itself, 
+A3:  There are 2 different approaches nezd uses to terminate itself, 
      see next section ^fg(#6fbf47)Termination^fg().
 
 
@@ -170,7 +170,7 @@ A5:  Yes, you can change both background and foreground colors and
      much more See ^fg(#6fbf47)(5) In-Text formating language^fg().
 
 
-Q6:  Can I use dzen as a menu?
+Q6:  Can I use nezd as a menu?
 
 A6:  Yes, both vertical and horizontal menus are supported. 
      See ^fg(#6fbf47)(3) Menu ^fg()for further details.
@@ -180,7 +180,7 @@ A6:  Yes, both vertical and horizontal menus are supported.
 
 ^fg(#6fbf47)Termination:
 ^fg(#6fbf47)------------
-dzen uses two different approaches to terminate itself:
+nezd uses two different approaches to terminate itself:
 
     ^co(4x4) Timed termination: if EOF is received -> terminate
         - unless the '-p' option is set
@@ -195,7 +195,7 @@ dzen uses two different approaches to terminate itself:
 
 ^fg(#6fbf47)Return values:
 ^fg(#6fbf47)--------------
-0               -   dzen received EOF
+0               -   nezd received EOF
 1               -   some error occurred, inspect the error message
 user defined    -   set with 'exit:retval' action, ^fg(#6fbf47)see (2)
 
@@ -221,7 +221,7 @@ and down if the content exceeds the window height (default action).
 ^fg(#6fbf47)(2) Option '-e': Events and actions
 ^fg(#6fbf47)-----------------------------------
 
-dzen allows the user to associate actions to events.
+nezd allows the user to associate actions to events.
 
 The command line syntax is as follows:
 -e 'event1=action1:option1:...option<n>,...,action<m>;...;event<l>'
@@ -244,7 +244,7 @@ An example:
     slave window and unhide the title window
 
     ^fg(grey70)button3=exit
-    on button3 event exit dzen
+    on button3 event exit nezd
 
 
 ^fg(#6fbf47)Supported events:
@@ -284,7 +284,7 @@ An example:
 
     exec:command1:..:n  execute all given options
     menuexec            executes selected menu entry
-    exit:retval         exit dzen and return 'retval'
+    exit:retval         exit nezd and return 'retval'
     print:str1:...:n    write all given options to STDOUT
     menuprint           write selected menu entry to STDOUT
     collapse            collapse (roll-up) slave window
@@ -310,7 +310,7 @@ An example:
                         only needed with specific windowmanagers, such as fluxbox
 
 
-^fg(Khaki)Note:   If no events/actions are specified dzen defaults to:
+^fg(Khaki)Note:   If no events/actions are specified nezd defaults to:
 
         ^fg(#6fbf47)Title only mode:
         ^fg(#6fbf47)----------------
@@ -347,16 +347,16 @@ An example:
 ^fg(#6fbf47)(3) Option '-m', Menu
 ^fg(#6fbf47)---------------------
 
-Dzen provides two menu modes, vertical and horizontal menus. You can
+Nezd provides two menu modes, vertical and horizontal menus. You can
 access these modes by adding 'v'(ertical) or 'h'(orizontal) to the 
-'-m' option. If nothing is specified dzen defaults to vertical menus.
+'-m' option. If nothing is specified nezd defaults to vertical menus.
 
 Vertical menu, both invocations are equivalent:
-    ^fg(grey70)dzen2 -p -l 4 -m < file
-    ^fg(grey70)dzen2 -p -l 4 -m v < file
+    ^fg(grey70)nezd -p -l 4 -m < file
+    ^fg(grey70)nezd -p -l 4 -m v < file
 
 Horizontal menu:
-    ^fg(grey70)dzen2 -p -l 4 -m h < file
+    ^fg(grey70)nezd -p -l 4 -m h < file
 
 
 All actions beginning with "menu" work on the selected menu entry.
@@ -388,7 +388,7 @@ The way it works is best described by an example:
         ^fg(grey70)date                # output goes to the title window
         ^fg(grey70)dmesg | tail -n 10  # output goes to the slave window
         ^fg(grey70)sleep 1
-  ^fg(grey70)done | dzen2 -l 10 -u
+  ^fg(grey70)done | nezd -l 10 -u
 
 For this to work correctly it is essential to provide exactly the number
 of lines to the slave window as defined by the parameter to '-l'.
@@ -398,7 +398,7 @@ of lines to the slave window as defined by the parameter to '-l'.
 ^fg(#6fbf47)(5) In-text formating language:
 ^fg(#6fbf47)-------------------------------
 
-This feature allows to dynamically (at runtime) format the text dzen
+This feature allows to dynamically (at runtime) format the text nezd
 displays.
 
 Currently the following commands are supported:
@@ -464,7 +464,7 @@ Other:
 
 
 
-These commands can appear anywhere and in any combination in dzen's
+These commands can appear anywhere and in any combination in nezd's
 input. 
 
 The color can be specified either as symbolic name (e.g. red,
@@ -533,57 +533,57 @@ Some examples:
 ^fg(#6fbf47)---------
 
 ^co(4x4) Display message and timeout after 10 seconds:
-^fg(grey85)    (echo "This is a message"; sleep 10) | dzen2 -bg darkred -fg grey85 -fn fixed 
+^fg(grey85)    (echo "This is a message"; sleep 10) | nezd -bg darkred -fg grey85 -fn fixed 
 
 
 ^co(4x4) Display message and never timeout:
-^fg(grey85)    echo "This is a message"| dzen2 -p
+^fg(grey85)    echo "This is a message"| nezd -p
 
 
 ^co(4x4) Display updating single line message:
-^fg(grey85)    for i in $(seq 1 20); do A=${A}'='; print $A; sleep 1; done | dzen2
+^fg(grey85)    for i in $(seq 1 20); do A=${A}'='; print $A; sleep 1; done | nezd
 
 
 ^co(4x4) Display header and a message with multiple lines:
-^fg(grey85)    (echo Header; cal; sleep 20) | dzen2 -l 8
+^fg(grey85)    (echo Header; cal; sleep 20) | nezd -l 8
 
     Displays "Header" in the title window and the output of cal in the
     8 lines high slave window.
 
 
 ^co(4x4) Display updating messages:
-^fg(grey85)    (echo Header; while true; do echo test$((i++)); sleep 1; done) | dzen2 -l 12
+^fg(grey85)    (echo Header; while true; do echo test$((i++)); sleep 1; done) | nezd -l 12
 
     The slave window will update contents if new input has arrived.
 
 
 ^co(4x4) Display log files:
-^fg(grey85)    (su -c "echo LOGFILENAME; tail -f /var/log/messages") | dzen2 -l 20 -x 100 -y 300 -w 500
+^fg(grey85)    (su -c "echo LOGFILENAME; tail -f /var/log/messages") | nezd -l 20 -x 100 -y 300 -w 500
 
 
 ^co(4x4) Monthly schedule with remind:
-^fg(grey85)    (echo Monthly Schedule; remind -c1 -m) | dzen2 -l 52 -w 410 -p -fn lime -bg '#e0e8ea' -fg black -x 635
+^fg(grey85)    (echo Monthly Schedule; remind -c1 -m) | nezd -l 52 -w 410 -p -fn lime -bg '#e0e8ea' -fg black -x 635
 
 
 ^co(4x4) Simple menu:
-^fg(grey85)    echo "Applications" | dzen2 -l 4 -p -m < menufile
+^fg(grey85)    echo "Applications" | nezd -l 4 -p -m < menufile
 
 
 ^co(4x4) Horizontal menu without any files:
-^fg(grey85)    {echo Menu; echo -e "xterm\nxclock\nxeyes\nxfontsel"} | dzen2 -l 4 -m h -p
+^fg(grey85)    {echo Menu; echo -e "xterm\nxclock\nxeyes\nxfontsel"} | nezd -l 4 -m h -p
 
 
 ^co(4x4) Extract PIDs from the process table:
 
-^fg(grey85)    {echo Procs; ps -a} | dzen2 -m -l 12 -p \
+^fg(grey85)    {echo Procs; ps -a} | nezd -m -l 12 -p \
 ^fg(grey85)    -e 'button1=menuprint;button3=exit;button4=scrollup:3;button5=scrolldown:3;entertitle=uncollapse;leaveslave=collapse' \
 ^fg(grey85)            | awk '{print $1}'
 
 
-^co(4x4) Dzen as xmonad (see http://xmonad.org) statusbar:
+^co(4x4) Nezd as xmonad (see http://xmonad.org) statusbar:
 
-^fg(grey85)    status.sh | dzen2 -ta r -fn '-*-profont-*-*-*-*-11-*-*-*-*-*-iso8859' -bg '#aecf96' -fg black \
-^fg(grey85)        -p -e 'sigusr1=raise;sigusr2=lower;onquit=exec:rm /tmp/dzen2-pid;button3=exit' & echo $! > /tmp/dzen2-pid
+^fg(grey85)    status.sh | nezd -ta r -fn '-*-profont-*-*-*-*-11-*-*-*-*-*-iso8859' -bg '#aecf96' -fg black \
+^fg(grey85)        -p -e 'sigusr1=raise;sigusr2=lower;onquit=exec:rm /tmp/nezd-pid;button3=exit' & echo $! > /tmp/nezd-pid
 
 
 

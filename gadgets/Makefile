@@ -1,4 +1,4 @@
-# dzen2 gadgets
+# nezd gadgets
 # (c) 2007 Robert Manea
 
 include config.mk
@@ -9,7 +9,7 @@ OBJ = ${SRC:.c=.o}
 all: options dbar gdbar gcpubar textwidth
 
 options:
-	@echo dzen2 gadgets build options:
+	@echo nezd gadgets build options:
 	@echo "CFLAGS   = ${CFLAGS}"
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"

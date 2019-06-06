@@ -4,7 +4,7 @@
 *
 */
 
-#include "dzen.h"
+#include "nezd.h"
 #include "action.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -267,18 +267,18 @@ fill_ev_table(char *input) {
 int
 a_exit(char * opt[]) {
 	if(opt[0])
-		dzen.ret_val = atoi(opt[0]);
-	dzen.running = False;
+		nezd.ret_val = atoi(opt[0]);
+	nezd.running = False;
 	return 0;
 }
 
 int
 a_collapse(char * opt[]){
 	(void)opt;
-	if(!dzen.slave_win.ishmenu
-			&& dzen.slave_win.max_lines
-			&& !dzen.slave_win.issticky) {
-		XUnmapWindow(dzen.dpy, dzen.slave_win.win);
+	if(!nezd.slave_win.ishmenu
+			&& nezd.slave_win.max_lines
+			&& !nezd.slave_win.issticky) {
+		XUnmapWindow(nezd.dpy, nezd.slave_win.win);
 	}
 	return 0;
 }
@@ -287,12 +287,12 @@ int
 a_uncollapse(char * opt[]){
 	int i;
 	(void)opt;
-	if(!dzen.slave_win.ishmenu
-			&& dzen.slave_win.max_lines
-			&& !dzen.slave_win.issticky) {
-		XMapRaised(dzen.dpy, dzen.slave_win.win);
-		for(i=0; i < dzen.slave_win.max_lines; i++)
-			XMapWindow(dzen.dpy, dzen.slave_win.line[i]);
+	if(!nezd.slave_win.ishmenu
+			&& nezd.slave_win.max_lines
+			&& !nezd.slave_win.issticky) {
+		XMapRaised(nezd.dpy, nezd.slave_win.win);
+		for(i=0; i < nezd.slave_win.max_lines; i++)
+			XMapWindow(nezd.dpy, nezd.slave_win.line[i]);
 	}
 	return 0;
 }
@@ -302,8 +302,8 @@ a_togglecollapse(char * opt[]){
 	XWindowAttributes wa;
 	(void)opt;
 
-	if(dzen.slave_win.max_lines &&
-			(XGetWindowAttributes(dzen.dpy, dzen.slave_win.win, &wa), wa.map_state == IsUnmapped))
+	if(nezd.slave_win.max_lines &&
+			(XGetWindowAttributes(nezd.dpy, nezd.slave_win.win, &wa), wa.map_state == IsUnmapped))
 		a_uncollapse(NULL);
 	else
 		a_collapse(NULL);
@@ -314,45 +314,45 @@ a_togglecollapse(char * opt[]){
 int
 a_stick(char * opt[]) {
 	(void)opt;
-	if(!dzen.slave_win.ishmenu
-			&& dzen.slave_win.max_lines)
-		dzen.slave_win.issticky = True;
+	if(!nezd.slave_win.ishmenu
+			&& nezd.slave_win.max_lines)
+		nezd.slave_win.issticky = True;
 	return 0;
 }
 
 int
 a_unstick(char * opt[]) {
 	(void)opt;
-	if(!dzen.slave_win.ishmenu
-			&& dzen.slave_win.max_lines)
-		dzen.slave_win.issticky = False;
+	if(!nezd.slave_win.ishmenu
+			&& nezd.slave_win.max_lines)
+		nezd.slave_win.issticky = False;
 	return 0;
 }
 
 int
 a_togglestick(char * opt[]) {
 	(void)opt;
-	if(!dzen.slave_win.ishmenu
-			&& dzen.slave_win.max_lines)
-		dzen.slave_win.issticky = dzen.slave_win.issticky ? False : True;
+	if(!nezd.slave_win.ishmenu
+			&& nezd.slave_win.max_lines)
+		nezd.slave_win.issticky = nezd.slave_win.issticky ? False : True;
 	return 0;
 }
 
 static void
 scroll(int n) {
-	if(dzen.slave_win.tcnt <= dzen.slave_win.max_lines)
+	if(nezd.slave_win.tcnt <= nezd.slave_win.max_lines)
 		return;
-	if(dzen.slave_win.first_line_vis + n < 0) {
-		dzen.slave_win.first_line_vis = 0;
-		dzen.slave_win.last_line_vis = dzen.slave_win.max_lines;
+	if(nezd.slave_win.first_line_vis + n < 0) {
+		nezd.slave_win.first_line_vis = 0;
+		nezd.slave_win.last_line_vis = nezd.slave_win.max_lines;
 	}
-	else if(dzen.slave_win.last_line_vis + n > dzen.slave_win.tcnt) {
-		dzen.slave_win.first_line_vis = dzen.slave_win.tcnt - dzen.slave_win.max_lines;
-		dzen.slave_win.last_line_vis = dzen.slave_win.tcnt;
+	else if(nezd.slave_win.last_line_vis + n > nezd.slave_win.tcnt) {
+		nezd.slave_win.first_line_vis = nezd.slave_win.tcnt - nezd.slave_win.max_lines;
+		nezd.slave_win.last_line_vis = nezd.slave_win.tcnt;
 	}
 	else {
-		dzen.slave_win.first_line_vis += n;
-		dzen.slave_win.last_line_vis  += n;
+		nezd.slave_win.first_line_vis += n;
+		nezd.slave_win.last_line_vis  += n;
 	}
 
 	x_draw_body();
@@ -364,7 +364,7 @@ a_scrollup(char * opt[]) {
 
 	if(opt[0])
 		n = atoi(opt[0]);
-	if(dzen.slave_win.max_lines)
+	if(nezd.slave_win.max_lines)
 			scroll(-1*n);
 
 	return 0;
@@ -376,7 +376,7 @@ a_scrolldown(char * opt[]) {
 
 	if(opt[0])
 		n = atoi(opt[0]);
-	if(dzen.slave_win.max_lines)
+	if(nezd.slave_win.max_lines)
 		scroll(n);
 
 	return 0;
@@ -388,13 +388,13 @@ a_hide(char * opt[]) {
 	
 	
 	printf("n:%d\n", n);
-	if(!dzen.title_win.ishidden) {
-		if(!dzen.slave_win.ishmenu)
-			XResizeWindow(dzen.dpy, dzen.title_win.win, dzen.title_win.width, 1);
+	if(!nezd.title_win.ishidden) {
+		if(!nezd.slave_win.ishmenu)
+			XResizeWindow(nezd.dpy, nezd.title_win.win, nezd.title_win.width, 1);
 		else
-			XResizeWindow(dzen.dpy, dzen.slave_win.win, dzen.title_win.width, 1);
+			XResizeWindow(nezd.dpy, nezd.slave_win.win, nezd.title_win.width, 1);
 
-		dzen.title_win.ishidden = True;
+		nezd.title_win.ishidden = True;
 	}
 	return 0;
 }
@@ -402,13 +402,13 @@ a_hide(char * opt[]) {
 int
 a_unhide(char * opt[]) {
 	(void)opt;
-	if(dzen.title_win.ishidden) {
-		if(!dzen.slave_win.ishmenu)
-			XResizeWindow(dzen.dpy, dzen.title_win.win, dzen.title_win.width, dzen.line_height);
+	if(nezd.title_win.ishidden) {
+		if(!nezd.slave_win.ishmenu)
+			XResizeWindow(nezd.dpy, nezd.title_win.win, nezd.title_win.width, nezd.line_height);
 		else
-			XResizeWindow(dzen.dpy, dzen.slave_win.win, dzen.title_win.width, dzen.line_height);
+			XResizeWindow(nezd.dpy, nezd.slave_win.win, nezd.title_win.width, nezd.line_height);
 
-		dzen.title_win.ishidden = False;
+		nezd.title_win.ishidden = False;
 	}
 	return 0;
 }
@@ -416,7 +416,7 @@ a_unhide(char * opt[]) {
 int
 a_togglehide(char * opt[]) {
 
-	dzen.title_win.ishidden ?
+	nezd.title_win.ishidden ?
 		a_unhide(NULL) :
 		a_hide(opt);
 
@@ -449,16 +449,16 @@ a_menuprint(char * opt[]) {
 	char *text;
 	int i;
 
-	if(dzen.slave_win.ismenu && dzen.slave_win.sel_line != -1
-			&& (dzen.slave_win.sel_line + dzen.slave_win.first_line_vis) < dzen.slave_win.tcnt) {
-		text = parse_line(NULL, dzen.slave_win.sel_line, 0, 0, 1);
+	if(nezd.slave_win.ismenu && nezd.slave_win.sel_line != -1
+			&& (nezd.slave_win.sel_line + nezd.slave_win.first_line_vis) < nezd.slave_win.tcnt) {
+		text = parse_line(NULL, nezd.slave_win.sel_line, 0, 0, 1);
 		printf("%s", text);
 		if(opt)
 			for(i=0; opt[i]; ++i)
 				printf("%s", opt[i]);
 		puts("");
 		fflush(stdout);
-		dzen.slave_win.sel_line = -1;
+		nezd.slave_win.sel_line = -1;
 		free(text);
 	}
 	return 0;
@@ -468,15 +468,15 @@ int
 a_menuprint_noparse(char * opt[]) {
 	int i;
 
-	if(dzen.slave_win.ismenu && dzen.slave_win.sel_line != -1
-			&& (dzen.slave_win.sel_line + dzen.slave_win.first_line_vis) < dzen.slave_win.tcnt) {
-		printf("%s", dzen.slave_win.tbuf[dzen.slave_win.sel_line]);
+	if(nezd.slave_win.ismenu && nezd.slave_win.sel_line != -1
+			&& (nezd.slave_win.sel_line + nezd.slave_win.first_line_vis) < nezd.slave_win.tcnt) {
+		printf("%s", nezd.slave_win.tbuf[nezd.slave_win.sel_line]);
 		if(opt)
 			for(i=0; opt[i]; ++i)
 				printf("%s", opt[i]);
 		puts("");
 		fflush(stdout);
-		dzen.slave_win.sel_line = -1;
+		nezd.slave_win.sel_line = -1;
 	}
 	return 0;
 }
@@ -486,11 +486,11 @@ a_menuexec(char * opt[]) {
 	char *text;
 	(void)opt;
 
-	if(dzen.slave_win.ismenu && dzen.slave_win.sel_line != -1
-			&& (dzen.slave_win.sel_line + dzen.slave_win.first_line_vis) < dzen.slave_win.tcnt) {
-		text = parse_line(NULL, dzen.slave_win.sel_line, 0, 0, 1);
+	if(nezd.slave_win.ismenu && nezd.slave_win.sel_line != -1
+			&& (nezd.slave_win.sel_line + nezd.slave_win.first_line_vis) < nezd.slave_win.tcnt) {
+		text = parse_line(NULL, nezd.slave_win.sel_line, 0, 0, 1);
 		spawn(text);
-		dzen.slave_win.sel_line = -1;
+		nezd.slave_win.sel_line = -1;
 		free(text);
 	}
 	return 0;
@@ -499,29 +499,29 @@ a_menuexec(char * opt[]) {
 int
 a_raise(char * opt[]) {
 	(void)opt;
-	XRaiseWindow(dzen.dpy, dzen.title_win.win);
+	XRaiseWindow(nezd.dpy, nezd.title_win.win);
 
-	if(dzen.slave_win.max_lines)
-		XRaiseWindow(dzen.dpy, dzen.slave_win.win);
+	if(nezd.slave_win.max_lines)
+		XRaiseWindow(nezd.dpy, nezd.slave_win.win);
 	return 0;
 }
 
 int
 a_lower(char * opt[]) {
 	(void)opt;
-	XLowerWindow(dzen.dpy, dzen.title_win.win);
+	XLowerWindow(nezd.dpy, nezd.title_win.win);
 
-	if(dzen.slave_win.max_lines)
-		XLowerWindow(dzen.dpy, dzen.slave_win.win);
+	if(nezd.slave_win.max_lines)
+		XLowerWindow(nezd.dpy, nezd.slave_win.win);
 	return 0;
 }
 
 int
 a_scrollhome(char * opt[]) {
 	(void)opt;
-	if(dzen.slave_win.max_lines) {
-		dzen.slave_win.first_line_vis = 0;
-		dzen.slave_win.last_line_vis  = dzen.slave_win.max_lines;
+	if(nezd.slave_win.max_lines) {
+		nezd.slave_win.first_line_vis = 0;
+		nezd.slave_win.last_line_vis  = nezd.slave_win.max_lines;
 
 		x_draw_body();
 	}
@@ -531,9 +531,9 @@ a_scrollhome(char * opt[]) {
 int
 a_scrollend(char * opt[]) {
 	(void)opt;
-	if(dzen.slave_win.max_lines) {
-		dzen.slave_win.first_line_vis = dzen.slave_win.tcnt - dzen.slave_win.max_lines ;
-		dzen.slave_win.last_line_vis  = dzen.slave_win.tcnt;
+	if(nezd.slave_win.max_lines) {
+		nezd.slave_win.first_line_vis = nezd.slave_win.tcnt - nezd.slave_win.max_lines ;
+		nezd.slave_win.last_line_vis  = nezd.slave_win.tcnt;
 
 		x_draw_body();
 	}
@@ -543,7 +543,7 @@ a_scrollend(char * opt[]) {
 int
 a_grabkeys(char * opt[]) {
 	(void)opt;
-	XGrabKeyboard(dzen.dpy, RootWindow(dzen.dpy, dzen.screen),
+	XGrabKeyboard(nezd.dpy, RootWindow(nezd.dpy, nezd.screen),
 			True, GrabModeAsync, GrabModeAsync, CurrentTime);
 	return 0;
 }
@@ -551,14 +551,14 @@ a_grabkeys(char * opt[]) {
 int
 a_ungrabkeys(char * opt[]) {
 	(void)opt;
-	XUngrabKeyboard(dzen.dpy, CurrentTime);
+	XUngrabKeyboard(nezd.dpy, CurrentTime);
 	return 0;
 }
 
 int
 a_grabmouse(char * opt[]) {
 	(void)opt;
-	XGrabPointer(dzen.dpy, RootWindow(dzen.dpy, dzen.screen),
+	XGrabPointer(nezd.dpy, RootWindow(nezd.dpy, nezd.screen),
 			True, ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
 	return 0;
 }
@@ -566,7 +566,7 @@ a_grabmouse(char * opt[]) {
 int
 a_ungrabmouse(char * opt[]) {
 	(void)opt;
-	XUngrabPointer(dzen.dpy, CurrentTime);
+	XUngrabPointer(nezd.dpy, CurrentTime);
 	return 0;
 }
 

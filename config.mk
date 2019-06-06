@@ -1,5 +1,5 @@
-# dzen version
-VERSION = 0.9.5-svn
+# nezd version
+VERSION = 0.0.1-development
 
 # Customize below to fit your system
 
@@ -25,37 +25,37 @@ INCS = -I. -I${X11INC}
 
 ## Option 2: No Xinerama with XPM
 #LIBS = -L${X11LIB} -lX11 -lXpm
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DDZEN_XPM
+#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XPM
 
 
 # Option 3: With Xinerama no XPM
 #LIBS = -L${X11LIB} -lX11 -lXinerama
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DDZEN_XINERAMA
+#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA
 
 
 ## Option 4: With Xinerama and XPM
-LIBS = -L${X11LIB} -lX11 -lXinerama -lXpm
-CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DDZEN_XINERAMA -DDZEN_XPM
+#LIBS = -L${X11LIB} -lX11 -lXinerama -lXpm
+#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XPM
 
 
 ## Option 5: With XFT
 #LIBS = -L${X11LIB} -lX11 `pkg-config --libs xft`
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DDZEN_XFT `pkg-config --cflags xft`
+#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XFT `pkg-config --cflags xft`
 
 
 ## Option 6: With XPM and XFT
 #LIBS = -L${X11LIB} -lX11 -lXpm `pkg-config --libs xft`
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DDZEN_XPM -DDZEN_XFT `pkg-config --cflags xft`
+#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XPM -DNEZD_XFT `pkg-config --cflags xft`
 
 
 ## Option 7: With Xinerama and XFT
 #LIBS = -L${X11LIB} -lX11 -lXinerama `pkg-config --libs xft`
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DDZEN_XINERAMA -DDZEN_XFT `pkg-config --cflags xft`
+#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XFT `pkg-config --cflags xft`
 
 
 ## Option 8: With Xinerama and XPM and XFT
-#LIBS = -L${X11LIB} -lX11 -lXinerama -lXpm `pkg-config --libs xft`
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DDZEN_XINERAMA -DDZEN_XPM -DDZEN_XFT `pkg-config --cflags xft`
+LIBS = -L${X11LIB} -lX11 -lXinerama -lXpm `pkg-config --libs xft`
+CFLAGS += -Wall -Werror -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XPM -DNEZD_XFT `pkg-config --cflags xft`
 
 
 
@@ -70,9 +70,9 @@ LDFLAGS += ${LIBS}
 #CFLAGS += -xtarget=ultra
 
 # Debugging
-#CFLAGS = ${INCS} -DVERSION=\"${VERSION}\" -std=gnu89 -pedantic -Wall -W -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wdisabled-optimization -O2 -pipe -DDZEN_XFT `pkg-config --cflags xft`
+#CFLAGS = ${INCS} -DVERSION=\"${VERSION}\" -std=gnu89 -pedantic -Wall -W -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wdisabled-optimization -O2 -pipe -DNEZD_XFT `pkg-config --cflags xft`
 #LDFLAGS = ${LIBS}
 
 # compiler and linker
-CC ?= gcc
+CC ?= clang
 LD = ${CC}

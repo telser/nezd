@@ -4,7 +4,7 @@
  *
  */
 
-#include "dzen.h"
+#include "nezd.h"
 #include "action.h"
 
 #include <ctype.h>
@@ -24,7 +24,7 @@
 #define HOST_NAME_MAX 255
 #endif
 
-Dzen dzen = {0};
+Nezd nezd = {0};
 static int last_cnt = 0;
 typedef void sigfunc(int);
 
@@ -33,27 +33,27 @@ clean_up(void) {
 	int i;
 
 	free_event_list();
-#ifndef DZEN_XFT
-	if(dzen.font.set)
-		XFreeFontSet(dzen.dpy, dzen.font.set);
+#ifndef NEZD_XFT
+	if(nezd.font.set)
+		XFreeFontSet(nezd.dpy, nezd.font.set);
 	else
-		XFreeFont(dzen.dpy, dzen.font.xfont);
+		XFreeFont(nezd.dpy, nezd.font.xfont);
 #endif
 
-	XFreePixmap(dzen.dpy, dzen.title_win.drawable);
-	if(dzen.slave_win.max_lines) {
-		for(i=0; i < dzen.slave_win.max_lines; i++) {
-			XFreePixmap(dzen.dpy, dzen.slave_win.drawable[i]);
-			XDestroyWindow(dzen.dpy, dzen.slave_win.line[i]);
+	XFreePixmap(nezd.dpy, nezd.title_win.drawable);
+	if(nezd.slave_win.max_lines) {
+		for(i=0; i < nezd.slave_win.max_lines; i++) {
+			XFreePixmap(nezd.dpy, nezd.slave_win.drawable[i]);
+			XDestroyWindow(nezd.dpy, nezd.slave_win.line[i]);
 		}
-		free(dzen.slave_win.line);
-		XDestroyWindow(dzen.dpy, dzen.slave_win.win);
+		free(nezd.slave_win.line);
+		XDestroyWindow(nezd.dpy, nezd.slave_win.win);
 	}
-	XFreeGC(dzen.dpy, dzen.gc);
-	XFreeGC(dzen.dpy, dzen.rgc);
-	XFreeGC(dzen.dpy, dzen.tgc);
-	XDestroyWindow(dzen.dpy, dzen.title_win.win);
-	XCloseDisplay(dzen.dpy);
+	XFreeGC(nezd.dpy, nezd.gc);
+	XFreeGC(nezd.dpy, nezd.rgc);
+	XFreeGC(nezd.dpy, nezd.tgc);
+	XDestroyWindow(nezd.dpy, nezd.title_win.win);
+	XCloseDisplay(nezd.dpy);
 }
 
 static void
@@ -130,12 +130,12 @@ chomp(char *inbuf, char *outbuf, int start, int len) {
 void
 free_buffer(void) {
 	int i;
-	for(i=0; i<dzen.slave_win.tcnt; i++) {
-		free(dzen.slave_win.tbuf[i]);
-		dzen.slave_win.tbuf[i] = NULL;
+	for(i=0; i<nezd.slave_win.tcnt; i++) {
+		free(nezd.slave_win.tbuf[i]);
+		nezd.slave_win.tbuf[i] = NULL;
 	}
-	dzen.slave_win.tcnt =
-		dzen.slave_win.last_line_vis =
+	nezd.slave_win.tcnt =
+		nezd.slave_win.last_line_vis =
 		last_cnt = 0;
 }
 
@@ -146,8 +146,8 @@ read_stdin(void) {
 	ssize_t n, n_off=0;
 
 	if(!(n = read(STDIN_FILENO, buf, sizeof buf))) {
-		if(!dzen.ispersistent) {
-			dzen.running = False;
+		if(!nezd.ispersistent) {
+			nezd.running = False;
 			return -1;
 		}
 		else
@@ -155,18 +155,18 @@ read_stdin(void) {
 	}
 	else {
 		while((n_off = chomp(buf, retbuf, n_off, n))) {
-			if(!dzen.slave_win.ishmenu
-					&& dzen.tsupdate
-					&& dzen.slave_win.max_lines
-					&& ((dzen.cur_line == 0) || !(dzen.cur_line % (dzen.slave_win.max_lines+1))))
+			if(!nezd.slave_win.ishmenu
+					&& nezd.tsupdate
+					&& nezd.slave_win.max_lines
+					&& ((nezd.cur_line == 0) || !(nezd.cur_line % (nezd.slave_win.max_lines+1))))
 				drawheader(retbuf);
-			else if(!dzen.slave_win.ishmenu
-					&& !dzen.tsupdate
-					&& ((dzen.cur_line == 0) || !dzen.slave_win.max_lines))
+			else if(!nezd.slave_win.ishmenu
+					&& !nezd.tsupdate
+					&& ((nezd.cur_line == 0) || !nezd.slave_win.max_lines))
 				drawheader(retbuf);
 			else
 				drawbody(retbuf);
-			dzen.cur_line++;
+			nezd.cur_line++;
 		}
 	}
 	return 0;
@@ -174,53 +174,53 @@ read_stdin(void) {
 
 static void
 x_hilight_line(int line) {
-	drawtext(dzen.slave_win.tbuf[line + dzen.slave_win.first_line_vis], 1, line, dzen.slave_win.alignment);
-	XCopyArea(dzen.dpy, dzen.slave_win.drawable[line], dzen.slave_win.line[line], dzen.gc,
-			0, 0, dzen.slave_win.width, dzen.line_height, 0, 0);
+	drawtext(nezd.slave_win.tbuf[line + nezd.slave_win.first_line_vis], 1, line, nezd.slave_win.alignment);
+	XCopyArea(nezd.dpy, nezd.slave_win.drawable[line], nezd.slave_win.line[line], nezd.gc,
+			0, 0, nezd.slave_win.width, nezd.line_height, 0, 0);
 }
 
 static void
 x_unhilight_line(int line) {
-	drawtext(dzen.slave_win.tbuf[line + dzen.slave_win.first_line_vis], 0, line, dzen.slave_win.alignment);
-	XCopyArea(dzen.dpy, dzen.slave_win.drawable[line], dzen.slave_win.line[line], dzen.rgc,
-			0, 0, dzen.slave_win.width, dzen.line_height, 0, 0);
+	drawtext(nezd.slave_win.tbuf[line + nezd.slave_win.first_line_vis], 0, line, nezd.slave_win.alignment);
+	XCopyArea(nezd.dpy, nezd.slave_win.drawable[line], nezd.slave_win.line[line], nezd.rgc,
+			0, 0, nezd.slave_win.width, nezd.line_height, 0, 0);
 }
 
 void
 x_draw_body(void) {
 	int i;
-	dzen.x = 0;
-	dzen.y = 0;
-	dzen.w = dzen.slave_win.width;
-	dzen.h = dzen.line_height;
+	nezd.x = 0;
+	nezd.y = 0;
+	nezd.w = nezd.slave_win.width;
+	nezd.h = nezd.line_height;
 	
 	window_sens[SLAVEWINDOW].sens_areas_cnt = 0;
 
-	if(!dzen.slave_win.last_line_vis) {
-		if(dzen.slave_win.tcnt < dzen.slave_win.max_lines) {
-			dzen.slave_win.first_line_vis = 0;
-			dzen.slave_win.last_line_vis  = dzen.slave_win.tcnt;
+	if(!nezd.slave_win.last_line_vis) {
+		if(nezd.slave_win.tcnt < nezd.slave_win.max_lines) {
+			nezd.slave_win.first_line_vis = 0;
+			nezd.slave_win.last_line_vis  = nezd.slave_win.tcnt;
 		}
 		else {
-			dzen.slave_win.first_line_vis = dzen.slave_win.tcnt - dzen.slave_win.max_lines;
-			dzen.slave_win.last_line_vis  = dzen.slave_win.tcnt;
+			nezd.slave_win.first_line_vis = nezd.slave_win.tcnt - nezd.slave_win.max_lines;
+			nezd.slave_win.last_line_vis  = nezd.slave_win.tcnt;
 		}
 	}
 
-	for(i=0; i < dzen.slave_win.max_lines; i++) {
-		if(i < dzen.slave_win.last_line_vis)
-			drawtext(dzen.slave_win.tbuf[i + dzen.slave_win.first_line_vis],
-					0, i, dzen.slave_win.alignment);
+	for(i=0; i < nezd.slave_win.max_lines; i++) {
+		if(i < nezd.slave_win.last_line_vis)
+			drawtext(nezd.slave_win.tbuf[i + nezd.slave_win.first_line_vis],
+					0, i, nezd.slave_win.alignment);
 	}
-	for(i=0; i < dzen.slave_win.max_lines; i++)
-		XCopyArea(dzen.dpy, dzen.slave_win.drawable[i], dzen.slave_win.line[i], dzen.gc,
-				0, 0, dzen.slave_win.width, dzen.line_height, 0, 0);
+	for(i=0; i < nezd.slave_win.max_lines; i++)
+		XCopyArea(nezd.dpy, nezd.slave_win.drawable[i], nezd.slave_win.line[i], nezd.gc,
+				0, 0, nezd.slave_win.width, nezd.line_height, 0, 0);
 }
 
 static void
 x_check_geometry(Geometry *geometry, XRectangle scr) {
-	TWIN *t = &dzen.title_win;
-	SWIN *s = &dzen.slave_win;
+	TWIN *t = &nezd.title_win;
+	SWIN *s = &nezd.slave_win;
 
 	if(geometry->relative_flags & RELATIVE_X)
 		t->x = s->x = geometry->x * scr.width / 100;
@@ -238,9 +238,9 @@ x_check_geometry(Geometry *geometry, XRectangle scr) {
 		s->width = geometry->y;
 
 	if(geometry->relative_flags & RELATIVE_HEIGHT)
-		dzen.line_height = geometry->height * scr.height / 100;
+		nezd.line_height = geometry->height * scr.height / 100;
 	else
-		dzen.line_height = geometry->height;
+		nezd.line_height = geometry->height;
 
 	if(geometry->relative_flags & RELATIVE_TITLE_WIDTH)
 		t->width = geometry->title_width * scr.width / 100;
@@ -279,11 +279,11 @@ x_check_geometry(Geometry *geometry, XRectangle scr) {
 			s->x = scr.x + (scr.width - s->width);
 	}
 
-	if(!dzen.line_height)
-		dzen.line_height = dzen.font.height + 2;
+	if(!nezd.line_height)
+		nezd.line_height = nezd.font.height + 2;
 
-	if(t->y + dzen.line_height > scr.y + scr.height)
-		t->y = scr.y + scr.height - dzen.line_height;
+	if(t->y + nezd.line_height > scr.y + scr.height)
+		t->y = scr.y + scr.height - nezd.line_height;
 }
 
 static void
@@ -294,7 +294,7 @@ qsi_no_xinerama(Display *dpy, XRectangle *rect) {
 	rect->height = DisplayHeight(dpy, DefaultScreen(dpy));
 }
 
-#ifdef DZEN_XINERAMA
+#ifdef NEZD_XINERAMA
 static void
 queryscreeninfo(Display *dpy, XRectangle *rect, int screen) {
 	XineramaScreenInfo *xsi = NULL;
@@ -326,7 +326,7 @@ set_docking_ewmh_info(Display *dpy, Window w, int dock) {
 	char *host_name;
 	XTextProperty txt_prop;
 	XRectangle si;
-#ifdef DZEN_XINERAMA
+#ifdef NEZD_XINERAMA
 	XineramaScreenInfo *xsi;
 	int screen_count,i,max_height;
 #endif
@@ -355,8 +355,8 @@ set_docking_ewmh_info(Display *dpy, Window w, int dock) {
 
 
 	XGetWindowAttributes(dpy, w, &wa);
-#ifdef DZEN_XINERAMA
-	queryscreeninfo(dpy,&si,dzen.xinescreen);
+#ifdef NEZD_XINERAMA
+	queryscreeninfo(dpy,&si,nezd.xinescreen);
 #else
 	qsi_no_xinerama(dpy,&si);
 #endif
@@ -368,7 +368,7 @@ set_docking_ewmh_info(Display *dpy, Window w, int dock) {
 		strut_s[2] = strut[2];
 	}
 	else if((wa.y - si.y + wa.height) == si.height) {
-#ifdef DZEN_XINERAMA
+#ifdef NEZD_XINERAMA
 		max_height = si.height;
 		xsi = XineramaQueryScreens(dpy,&screen_count);
 		for(i=0; i < screen_count; i++) {
@@ -470,23 +470,23 @@ x_create_gcs(void) {
 	gcv.graphics_exposures = 0;
 
 	/* normal GC */
-	dzen.gc  = XCreateGC(dzen.dpy, RootWindow(dzen.dpy, dzen.screen), GCGraphicsExposures, &gcv);
-	XSetForeground(dzen.dpy, dzen.gc, dzen.norm[ColFG]);
-	XSetBackground(dzen.dpy, dzen.gc, dzen.norm[ColBG]);
+	nezd.gc  = XCreateGC(nezd.dpy, RootWindow(nezd.dpy, nezd.screen), GCGraphicsExposures, &gcv);
+	XSetForeground(nezd.dpy, nezd.gc, nezd.norm[ColFG]);
+	XSetBackground(nezd.dpy, nezd.gc, nezd.norm[ColBG]);
 	/* reverse color GC */
-	dzen.rgc = XCreateGC(dzen.dpy, RootWindow(dzen.dpy, dzen.screen), GCGraphicsExposures, &gcv);
-	XSetForeground(dzen.dpy, dzen.rgc, dzen.norm[ColBG]);
-	XSetBackground(dzen.dpy, dzen.rgc, dzen.norm[ColFG]);
+	nezd.rgc = XCreateGC(nezd.dpy, RootWindow(nezd.dpy, nezd.screen), GCGraphicsExposures, &gcv);
+	XSetForeground(nezd.dpy, nezd.rgc, nezd.norm[ColBG]);
+	XSetBackground(nezd.dpy, nezd.rgc, nezd.norm[ColFG]);
 	/* temporary GC */
-	dzen.tgc = XCreateGC(dzen.dpy, RootWindow(dzen.dpy, dzen.screen), GCGraphicsExposures, &gcv);
+	nezd.tgc = XCreateGC(nezd.dpy, RootWindow(nezd.dpy, nezd.screen), GCGraphicsExposures, &gcv);
 }
 
 static void
 x_connect(void) {
-	dzen.dpy = XOpenDisplay(0);
-	if(!dzen.dpy)
-		eprint("dzen: cannot open display\n");
-	dzen.screen = DefaultScreen(dzen.dpy);
+	nezd.dpy = XOpenDisplay(0);
+	if(!nezd.dpy)
+		eprint("nezd: cannot open display\n");
+	nezd.screen = DefaultScreen(nezd.dpy);
 }
 
 /* Read display styles from X resources. */
@@ -498,19 +498,19 @@ x_read_resources(void) {
 	XrmValue xvalue;
 
 	XrmInitialize();
-	xrm = XResourceManagerString(dzen.dpy);
+	xrm = XResourceManagerString(nezd.dpy);
 	if( xrm != NULL ) {
 		xdb = XrmGetStringDatabase(xrm);
-		if( XrmGetResource(xdb, "dzen2.font", "*", datatype, &xvalue) == True )
-			dzen.fnt = estrdup(xvalue.addr);
-		if( XrmGetResource(xdb, "dzen2.foreground", "*", datatype, &xvalue) == True )
-			dzen.fg  = estrdup(xvalue.addr);
-		if( XrmGetResource(xdb, "dzen2.background", "*", datatype, &xvalue) == True )
-			dzen.bg  = estrdup(xvalue.addr);
-		if( XrmGetResource(xdb, "dzen2.titlename", "*", datatype, &xvalue) == True )
-			dzen.title_win.name  = estrdup(xvalue.addr);
-		if( XrmGetResource(xdb, "dzen2.slavename", "*", datatype, &xvalue) == True )
-			dzen.slave_win.name  = estrdup(xvalue.addr);
+		if( XrmGetResource(xdb, "nezd.font", "*", datatype, &xvalue) == True )
+			nezd.fnt = estrdup(xvalue.addr);
+		if( XrmGetResource(xdb, "nezd.foreground", "*", datatype, &xvalue) == True )
+			nezd.fg  = estrdup(xvalue.addr);
+		if( XrmGetResource(xdb, "nezd.background", "*", datatype, &xvalue) == True )
+			nezd.bg  = estrdup(xvalue.addr);
+		if( XrmGetResource(xdb, "nezd.titlename", "*", datatype, &xvalue) == True )
+			nezd.title_win.name  = estrdup(xvalue.addr);
+		if( XrmGetResource(xdb, "nezd.slavename", "*", datatype, &xvalue) == True )
+			nezd.slave_win.name  = estrdup(xvalue.addr);
 		XrmDestroyDatabase(xdb);
 	}
 }
@@ -523,14 +523,14 @@ x_create_windows(Geometry *geometry, int use_ewmh_dock) {
 	XRectangle si;
 	XClassHint *class_hint;
 
-	root = RootWindow(dzen.dpy, dzen.screen);
+	root = RootWindow(nezd.dpy, nezd.screen);
 
 	/* style */
-	if((dzen.norm[ColBG] = getcolor(dzen.bg)) == ~0lu)
-		eprint("dzen: error, cannot allocate color '%s'\n", dzen.bg);
-	if((dzen.norm[ColFG] = getcolor(dzen.fg)) == ~0lu)
-		eprint("dzen: error, cannot allocate color '%s'\n", dzen.fg);
-	setfont(dzen.fnt);
+	if((nezd.norm[ColBG] = getcolor(nezd.bg)) == ~0lu)
+		eprint("nezd: error, cannot allocate color '%s'\n", nezd.bg);
+	if((nezd.norm[ColFG] = getcolor(nezd.fg)) == ~0lu)
+		eprint("nezd: error, cannot allocate color '%s'\n", nezd.fg);
+	setfont(nezd.fnt);
 
 	x_create_gcs();
 
@@ -539,114 +539,114 @@ x_create_windows(Geometry *geometry, int use_ewmh_dock) {
 	wa.background_pixmap = ParentRelative;
 	wa.event_mask = ExposureMask | ButtonReleaseMask | ButtonPressMask | ButtonMotionMask | EnterWindowMask | LeaveWindowMask | KeyPressMask;
 
-#ifdef DZEN_XINERAMA
-	queryscreeninfo(dzen.dpy, &si, dzen.xinescreen);
+#ifdef NEZD_XINERAMA
+	queryscreeninfo(nezd.dpy, &si, nezd.xinescreen);
 #else
-	qsi_no_xinerama(dzen.dpy, &si);
+	qsi_no_xinerama(nezd.dpy, &si);
 #endif
 	x_check_geometry(geometry, si);
 
 	/* title window */
-	dzen.title_win.win = XCreateWindow(dzen.dpy, root,
-			dzen.title_win.x, dzen.title_win.y, dzen.title_win.width, dzen.line_height, 0,
-			DefaultDepth(dzen.dpy, dzen.screen), CopyFromParent,
-			DefaultVisual(dzen.dpy, dzen.screen),
+	nezd.title_win.win = XCreateWindow(nezd.dpy, root,
+			nezd.title_win.x, nezd.title_win.y, nezd.title_win.width, nezd.line_height, 0,
+			DefaultDepth(nezd.dpy, nezd.screen), CopyFromParent,
+			DefaultVisual(nezd.dpy, nezd.screen),
 			CWOverrideRedirect | CWBackPixmap | CWEventMask, &wa);
 	/* set class property */
 	class_hint = XAllocClassHint();
-	class_hint->res_name  = "dzen2";
-	class_hint->res_class = "Dzen";
-	XSetClassHint(dzen.dpy, dzen.title_win.win, class_hint);
+	class_hint->res_name  = "nezd";
+	class_hint->res_class = "Nezd";
+	XSetClassHint(nezd.dpy, nezd.title_win.win, class_hint);
 	XFree(class_hint);
 
 	/* title */
-	XStoreName(dzen.dpy, dzen.title_win.win, dzen.title_win.name);
+	XStoreName(nezd.dpy, nezd.title_win.win, nezd.title_win.name);
 
-	dzen.title_win.drawable = XCreatePixmap(dzen.dpy, root, dzen.title_win.width,
-			dzen.line_height, DefaultDepth(dzen.dpy, dzen.screen));
-	XFillRectangle(dzen.dpy, dzen.title_win.drawable, dzen.rgc, 0, 0, dzen.title_win.width, dzen.line_height);
+	nezd.title_win.drawable = XCreatePixmap(nezd.dpy, root, nezd.title_win.width,
+			nezd.line_height, DefaultDepth(nezd.dpy, nezd.screen));
+	XFillRectangle(nezd.dpy, nezd.title_win.drawable, nezd.rgc, 0, 0, nezd.title_win.width, nezd.line_height);
 
 	/* set some hints for windowmanagers*/
-	set_docking_ewmh_info(dzen.dpy, dzen.title_win.win, use_ewmh_dock);
+	set_docking_ewmh_info(nezd.dpy, nezd.title_win.win, use_ewmh_dock);
 
 	/* TODO: Smarter approach to window creation so we can reduce the
 	 *       size of this function.
 	 */
 
-	if(dzen.slave_win.max_lines) {
-		dzen.slave_win.first_line_vis = 0;
-		dzen.slave_win.last_line_vis  = 0;
-		dzen.slave_win.line     = emalloc(sizeof(Window) * dzen.slave_win.max_lines);
-		dzen.slave_win.drawable =  emalloc(sizeof(Drawable) * dzen.slave_win.max_lines);
+	if(nezd.slave_win.max_lines) {
+		nezd.slave_win.first_line_vis = 0;
+		nezd.slave_win.last_line_vis  = 0;
+		nezd.slave_win.line     = emalloc(sizeof(Window) * nezd.slave_win.max_lines);
+		nezd.slave_win.drawable =  emalloc(sizeof(Drawable) * nezd.slave_win.max_lines);
 
 		/* horizontal menu mode */
-		if(dzen.slave_win.ishmenu) {
+		if(nezd.slave_win.ishmenu) {
 			/* calculate width of menuentries - this is a very simple
 			 * approach but works well for general cases.
 			 */
-			int ew = dzen.slave_win.width / dzen.slave_win.max_lines;
-			int r = dzen.slave_win.width - ew * dzen.slave_win.max_lines;
-			dzen.slave_win.issticky = True;
-			dzen.slave_win.y = dzen.title_win.y;
+			int ew = nezd.slave_win.width / nezd.slave_win.max_lines;
+			int r = nezd.slave_win.width - ew * nezd.slave_win.max_lines;
+			nezd.slave_win.issticky = True;
+			nezd.slave_win.y = nezd.title_win.y;
 
-			dzen.slave_win.win = XCreateWindow(dzen.dpy, root,
-					dzen.slave_win.x, dzen.slave_win.y, dzen.slave_win.width, dzen.line_height, 0,
-					DefaultDepth(dzen.dpy, dzen.screen), CopyFromParent,
-					DefaultVisual(dzen.dpy, dzen.screen),
+			nezd.slave_win.win = XCreateWindow(nezd.dpy, root,
+					nezd.slave_win.x, nezd.slave_win.y, nezd.slave_win.width, nezd.line_height, 0,
+					DefaultDepth(nezd.dpy, nezd.screen), CopyFromParent,
+					DefaultVisual(nezd.dpy, nezd.screen),
 					CWOverrideRedirect | CWBackPixmap | CWEventMask, &wa);
-			XStoreName(dzen.dpy, dzen.slave_win.win, dzen.slave_win.name);
+			XStoreName(nezd.dpy, nezd.slave_win.win, nezd.slave_win.name);
 
-			for(i=0; i < dzen.slave_win.max_lines; i++) {
-				dzen.slave_win.drawable[i] = XCreatePixmap(dzen.dpy, root, ew+r,
-						dzen.line_height, DefaultDepth(dzen.dpy, dzen.screen));
-			XFillRectangle(dzen.dpy, dzen.slave_win.drawable[i], dzen.rgc, 0, 0,
-					ew+r, dzen.line_height);
+			for(i=0; i < nezd.slave_win.max_lines; i++) {
+				nezd.slave_win.drawable[i] = XCreatePixmap(nezd.dpy, root, ew+r,
+						nezd.line_height, DefaultDepth(nezd.dpy, nezd.screen));
+			XFillRectangle(nezd.dpy, nezd.slave_win.drawable[i], nezd.rgc, 0, 0,
+					ew+r, nezd.line_height);
 			}
 
 
 			/* windows holding the lines */
-			for(i=0; i < dzen.slave_win.max_lines; i++)
-				dzen.slave_win.line[i] = XCreateWindow(dzen.dpy, dzen.slave_win.win,
-						i*ew, 0, (i == dzen.slave_win.max_lines-1) ? ew+r : ew, dzen.line_height, 0,
-						DefaultDepth(dzen.dpy, dzen.screen), CopyFromParent,
-						DefaultVisual(dzen.dpy, dzen.screen),
+			for(i=0; i < nezd.slave_win.max_lines; i++)
+				nezd.slave_win.line[i] = XCreateWindow(nezd.dpy, nezd.slave_win.win,
+						i*ew, 0, (i == nezd.slave_win.max_lines-1) ? ew+r : ew, nezd.line_height, 0,
+						DefaultDepth(nezd.dpy, nezd.screen), CopyFromParent,
+						DefaultVisual(nezd.dpy, nezd.screen),
 						CWOverrideRedirect | CWBackPixmap | CWEventMask, &wa);
 
 			/* As we don't use the title window in this mode,
 			 * we reuse its width value
 			 */
-			dzen.title_win.width = dzen.slave_win.width;
-			dzen.slave_win.width = ew+r;
+			nezd.title_win.width = nezd.slave_win.width;
+			nezd.slave_win.width = ew+r;
 		}
 
 		/* vertical slave window */
 		else {
-			dzen.slave_win.issticky = False;
-			dzen.slave_win.y = dzen.title_win.y + dzen.line_height;
+			nezd.slave_win.issticky = False;
+			nezd.slave_win.y = nezd.title_win.y + nezd.line_height;
 
-			if(dzen.title_win.y + dzen.line_height*dzen.slave_win.max_lines > si.y + si.height)
-				dzen.slave_win.y = (dzen.title_win.y - dzen.line_height) - dzen.line_height*(dzen.slave_win.max_lines) + dzen.line_height;
+			if(nezd.title_win.y + nezd.line_height*nezd.slave_win.max_lines > si.y + si.height)
+				nezd.slave_win.y = (nezd.title_win.y - nezd.line_height) - nezd.line_height*(nezd.slave_win.max_lines) + nezd.line_height;
 
-			dzen.slave_win.win = XCreateWindow(dzen.dpy, root,
-					dzen.slave_win.x, dzen.slave_win.y, dzen.slave_win.width, dzen.slave_win.max_lines * dzen.line_height, 0,
-					DefaultDepth(dzen.dpy, dzen.screen), CopyFromParent,
-					DefaultVisual(dzen.dpy, dzen.screen),
+			nezd.slave_win.win = XCreateWindow(nezd.dpy, root,
+					nezd.slave_win.x, nezd.slave_win.y, nezd.slave_win.width, nezd.slave_win.max_lines * nezd.line_height, 0,
+					DefaultDepth(nezd.dpy, nezd.screen), CopyFromParent,
+					DefaultVisual(nezd.dpy, nezd.screen),
 					CWOverrideRedirect | CWBackPixmap | CWEventMask, &wa);
-			XStoreName(dzen.dpy, dzen.slave_win.win, dzen.slave_win.name);
+			XStoreName(nezd.dpy, nezd.slave_win.win, nezd.slave_win.name);
 
-			for(i=0; i < dzen.slave_win.max_lines; i++) {
-				dzen.slave_win.drawable[i] = XCreatePixmap(dzen.dpy, root, dzen.slave_win.width,
-						dzen.line_height, DefaultDepth(dzen.dpy, dzen.screen));
-				XFillRectangle(dzen.dpy, dzen.slave_win.drawable[i], dzen.rgc, 0, 0,
-						dzen.slave_win.width, dzen.line_height);
+			for(i=0; i < nezd.slave_win.max_lines; i++) {
+				nezd.slave_win.drawable[i] = XCreatePixmap(nezd.dpy, root, nezd.slave_win.width,
+						nezd.line_height, DefaultDepth(nezd.dpy, nezd.screen));
+				XFillRectangle(nezd.dpy, nezd.slave_win.drawable[i], nezd.rgc, 0, 0,
+						nezd.slave_win.width, nezd.line_height);
 			}
 
 			/* windows holding the lines */
-			for(i=0; i < dzen.slave_win.max_lines; i++)
-				dzen.slave_win.line[i] = XCreateWindow(dzen.dpy, dzen.slave_win.win,
-						0, i*dzen.line_height, dzen.slave_win.width, dzen.line_height, 0,
-						DefaultDepth(dzen.dpy, dzen.screen), CopyFromParent,
-						DefaultVisual(dzen.dpy, dzen.screen),
+			for(i=0; i < nezd.slave_win.max_lines; i++)
+				nezd.slave_win.line[i] = XCreateWindow(nezd.dpy, nezd.slave_win.win,
+						0, i*nezd.line_height, nezd.slave_win.width, nezd.line_height, 0,
+						DefaultDepth(nezd.dpy, nezd.screen), CopyFromParent,
+						DefaultVisual(nezd.dpy, nezd.screen),
 						CWOverrideRedirect | CWBackPixmap | CWEventMask, &wa);
 		}
 	}
@@ -655,27 +655,27 @@ x_create_windows(Geometry *geometry, int use_ewmh_dock) {
 
 static void
 x_map_window(Window win) {
-	XMapRaised(dzen.dpy, win);
-	XSync(dzen.dpy, False);
+	XMapRaised(nezd.dpy, win);
+	XSync(nezd.dpy, False);
 }
 
 static void
 x_redraw(Window w) {
 	int i;
 
-	if(!dzen.slave_win.ishmenu
-			&& w == dzen.title_win.win)
+	if(!nezd.slave_win.ishmenu
+			&& w == nezd.title_win.win)
 		drawheader(NULL);
-	if(!dzen.tsupdate && w == dzen.slave_win.win) {
-		for(i=0; i < dzen.slave_win.max_lines; i++)
-			XCopyArea(dzen.dpy, dzen.slave_win.drawable[i], dzen.slave_win.line[i], dzen.gc,
-					0, 0, dzen.slave_win.width, dzen.line_height, 0, 0);
+	if(!nezd.tsupdate && w == nezd.slave_win.win) {
+		for(i=0; i < nezd.slave_win.max_lines; i++)
+			XCopyArea(nezd.dpy, nezd.slave_win.drawable[i], nezd.slave_win.line[i], nezd.gc,
+					0, 0, nezd.slave_win.width, nezd.line_height, 0, 0);
 	}
 	else {
-		for(i=0; i < dzen.slave_win.max_lines; i++)
-			if(w == dzen.slave_win.line[i]) {
-				XCopyArea(dzen.dpy, dzen.slave_win.drawable[i], dzen.slave_win.line[i], dzen.gc,
-						0, 0, dzen.slave_win.width, dzen.line_height, 0, 0);
+		for(i=0; i < nezd.slave_win.max_lines; i++)
+			if(w == nezd.slave_win.line[i]) {
+				XCopyArea(nezd.dpy, nezd.slave_win.drawable[i], nezd.slave_win.line[i], nezd.gc,
+						0, 0, nezd.slave_win.width, nezd.line_height, 0, 0);
 			}
 	}
 }
@@ -687,46 +687,46 @@ handle_xev(void) {
 	char buf[32];
 	KeySym ksym;
 
-	XNextEvent(dzen.dpy, &ev);
+	XNextEvent(nezd.dpy, &ev);
 	switch(ev.type) {
 		case Expose:
 			if(ev.xexpose.count == 0)
 				x_redraw(ev.xexpose.window);
 			break;
 		case EnterNotify:
-			if(dzen.slave_win.ismenu) {
-				for(i=0; i < dzen.slave_win.max_lines; i++)
-					if(ev.xcrossing.window == dzen.slave_win.line[i])
+			if(nezd.slave_win.ismenu) {
+				for(i=0; i < nezd.slave_win.max_lines; i++)
+					if(ev.xcrossing.window == nezd.slave_win.line[i])
 						x_hilight_line(i);
 			}
-			if(!dzen.slave_win.ishmenu
-					&& ev.xcrossing.window == dzen.title_win.win)
+			if(!nezd.slave_win.ishmenu
+					&& ev.xcrossing.window == nezd.title_win.win)
 				do_action(entertitle);
-			if(ev.xcrossing.window == dzen.slave_win.win)
+			if(ev.xcrossing.window == nezd.slave_win.win)
 				do_action(enterslave);
 			break;
 		case LeaveNotify:
-			if(dzen.slave_win.ismenu) {
-				for(i=0; i < dzen.slave_win.max_lines; i++)
-					if(ev.xcrossing.window == dzen.slave_win.line[i])
+			if(nezd.slave_win.ismenu) {
+				for(i=0; i < nezd.slave_win.max_lines; i++)
+					if(ev.xcrossing.window == nezd.slave_win.line[i])
 						x_unhilight_line(i);
 			}
-			if(!dzen.slave_win.ishmenu
-					&& ev.xcrossing.window == dzen.title_win.win)
+			if(!nezd.slave_win.ishmenu
+					&& ev.xcrossing.window == nezd.title_win.win)
 				do_action(leavetitle);
-			if(ev.xcrossing.window == dzen.slave_win.win) {
+			if(ev.xcrossing.window == nezd.slave_win.win) {
 				do_action(leaveslave);
 			}
 			break;
 		case ButtonRelease:
-			if(dzen.slave_win.ismenu) {
-				for(i=0; i < dzen.slave_win.max_lines; i++)
-					if(ev.xbutton.window == dzen.slave_win.line[i])
-						dzen.slave_win.sel_line = i;
+			if(nezd.slave_win.ismenu) {
+				for(i=0; i < nezd.slave_win.max_lines; i++)
+					if(ev.xbutton.window == nezd.slave_win.line[i])
+						nezd.slave_win.sel_line = i;
 			}
 
 			/* clickable areas */
-			int w_id = ev.xbutton.window == dzen.title_win.win ? 0 : 1;
+			int w_id = ev.xbutton.window == nezd.title_win.win ? 0 : 1;
 			sens_w w = window_sens[w_id];
 			for(i=w.sens_areas_cnt; i>=0; i--) {
 				if(ev.xbutton.window == w.sens_areas[i].win &&
@@ -781,30 +781,30 @@ handle_newl(void) {
 	XWindowAttributes wa;
 
 
-	if(dzen.slave_win.max_lines && (dzen.slave_win.tcnt > last_cnt)) {
+	if(nezd.slave_win.max_lines && (nezd.slave_win.tcnt > last_cnt)) {
 		do_action(onnewinput);
 
-		if (XGetWindowAttributes(dzen.dpy, dzen.slave_win.win, &wa),
+		if (XGetWindowAttributes(nezd.dpy, nezd.slave_win.win, &wa),
 				wa.map_state != IsUnmapped
 				/* autoscroll and redraw only if  we're
 				 * currently viewing the last line of input
 				 */
-				&& (dzen.slave_win.last_line_vis == last_cnt)) {
-			dzen.slave_win.first_line_vis = 0;
-			dzen.slave_win.last_line_vis = 0;
+				&& (nezd.slave_win.last_line_vis == last_cnt)) {
+			nezd.slave_win.first_line_vis = 0;
+			nezd.slave_win.last_line_vis = 0;
 			x_draw_body();
 		}
 		/* needed for a_scrollhome */
 		else if(wa.map_state != IsUnmapped
-				&& dzen.slave_win.last_line_vis == dzen.slave_win.max_lines)
+				&& nezd.slave_win.last_line_vis == nezd.slave_win.max_lines)
 			x_draw_body();
 		/* forget state if window was unmapped */
-		else if(wa.map_state == IsUnmapped || !dzen.slave_win.last_line_vis) {
-			dzen.slave_win.first_line_vis = 0;
-			dzen.slave_win.last_line_vis = 0;
+		else if(wa.map_state == IsUnmapped || !nezd.slave_win.last_line_vis) {
+			nezd.slave_win.first_line_vis = 0;
+			nezd.slave_win.last_line_vis = 0;
 			x_draw_body();
 		}
-		last_cnt = dzen.slave_win.tcnt;
+		last_cnt = nezd.slave_win.tcnt;
 	}
 }
 
@@ -813,14 +813,14 @@ event_loop(void) {
 	int xfd, ret, dr=0;
 	fd_set rmask;
 
-	xfd = ConnectionNumber(dzen.dpy);
-	while(dzen.running) {
+	xfd = ConnectionNumber(nezd.dpy);
+	while(nezd.running) {
 		FD_ZERO(&rmask);
 		FD_SET(xfd, &rmask);
 		if(dr != -2)
 			FD_SET(STDIN_FILENO, &rmask);
 
-		while(XPending(dzen.dpy))
+		while(XPending(nezd.dpy))
 			handle_xev();
 
 		ret = select(xfd+1, &rmask, NULL, NULL, NULL);
@@ -830,11 +830,11 @@ event_loop(void) {
 					return;
 				handle_newl();
 			}
-			if(dr == -2 && dzen.timeout > 0) {
+			if(dr == -2 && nezd.timeout > 0) {
 				/* set an alarm to kill us after the timeout */
 				struct itimerval t;
 				memset(&t, 0, sizeof t);
-				t.it_value.tv_sec = dzen.timeout;
+				t.it_value.tv_sec = nezd.timeout;
 				t.it_value.tv_usec = 0;
 				setitimer(ITIMER_REAL, &t, NULL);
 			}
@@ -852,35 +852,35 @@ x_preload(const char *fontstr, int p) {
 
 	missing = NULL;
 
-	dzen.fnpl[p].set = XCreateFontSet(dzen.dpy, fontstr, &missing, &n, &def);
+	nezd.fnpl[p].set = XCreateFontSet(nezd.dpy, fontstr, &missing, &n, &def);
 	if(missing)
 		XFreeStringList(missing);
 
-	if(dzen.fnpl[p].set) {
+	if(nezd.fnpl[p].set) {
 		XFontSetExtents *font_extents;
 		XFontStruct **xfonts;
 		char **font_names;
-		dzen.fnpl[p].ascent = dzen.fnpl[p].descent = 0;
-		font_extents = XExtentsOfFontSet(dzen.fnpl[p].set);
-		n = XFontsOfFontSet(dzen.fnpl[p].set, &xfonts, &font_names);
-		for(i = 0, dzen.fnpl[p].ascent = 0, dzen.fnpl[p].descent = 0; i < n; i++) {
-			if(dzen.fnpl[p].ascent < (*xfonts)->ascent)
-				dzen.fnpl[p].ascent = (*xfonts)->ascent;
-			if(dzen.fnpl[p].descent < (*xfonts)->descent)
-				dzen.fnpl[p].descent = (*xfonts)->descent;
+		nezd.fnpl[p].ascent = nezd.fnpl[p].descent = 0;
+		font_extents = XExtentsOfFontSet(nezd.fnpl[p].set);
+		n = XFontsOfFontSet(nezd.fnpl[p].set, &xfonts, &font_names);
+		for(i = 0, nezd.fnpl[p].ascent = 0, nezd.fnpl[p].descent = 0; i < n; i++) {
+			if(nezd.fnpl[p].ascent < (*xfonts)->ascent)
+				nezd.fnpl[p].ascent = (*xfonts)->ascent;
+			if(nezd.fnpl[p].descent < (*xfonts)->descent)
+				nezd.fnpl[p].descent = (*xfonts)->descent;
 			xfonts++;
 		}
 	}
 	else {
-		if(dzen.fnpl[p].xfont)
-			XFreeFont(dzen.dpy, dzen.fnpl[p].xfont);
-		dzen.fnpl[p].xfont = NULL;
-		if(!(dzen.fnpl[p].xfont = XLoadQueryFont(dzen.dpy, fontstr)))
-			eprint("dzen: error, cannot load font: '%s'\n", fontstr);
-		dzen.fnpl[p].ascent = dzen.fnpl[p].xfont->ascent;
-		dzen.fnpl[p].descent = dzen.fnpl[p].xfont->descent;
+		if(nezd.fnpl[p].xfont)
+			XFreeFont(nezd.dpy, nezd.fnpl[p].xfont);
+		nezd.fnpl[p].xfont = NULL;
+		if(!(nezd.fnpl[p].xfont = XLoadQueryFont(nezd.dpy, fontstr)))
+			eprint("nezd: error, cannot load font: '%s'\n", fontstr);
+		nezd.fnpl[p].ascent = nezd.fnpl[p].xfont->ascent;
+		nezd.fnpl[p].descent = nezd.fnpl[p].xfont->descent;
 	}
-	dzen.fnpl[p].height = dzen.fnpl[p].ascent + dzen.fnpl[p].descent;
+	nezd.fnpl[p].height = nezd.fnpl[p].ascent + nezd.fnpl[p].descent;
 }
 
 static void
@@ -907,12 +907,12 @@ alignment_from_char(char align) {
 
 static void
 init_input_buffer(void) {
-	if(MIN_BUF_SIZE % dzen.slave_win.max_lines)
-		dzen.slave_win.tsize = MIN_BUF_SIZE + (dzen.slave_win.max_lines - (MIN_BUF_SIZE % dzen.slave_win.max_lines));
+	if(MIN_BUF_SIZE % nezd.slave_win.max_lines)
+		nezd.slave_win.tsize = MIN_BUF_SIZE + (nezd.slave_win.max_lines - (MIN_BUF_SIZE % nezd.slave_win.max_lines));
 	else
-		dzen.slave_win.tsize = MIN_BUF_SIZE;
+		nezd.slave_win.tsize = MIN_BUF_SIZE;
 
-	dzen.slave_win.tbuf = emalloc(dzen.slave_win.tsize * sizeof(char *));
+	nezd.slave_win.tbuf = emalloc(nezd.slave_win.tsize * sizeof(char *));
 }
 
 int
@@ -929,21 +929,21 @@ main(int argc, char *argv[]) {
 	geometry.height = 0;
 	geometry.relative_flags = 0;
 
-	dzen.title_win.name = "dzen title";
-	dzen.slave_win.name = "dzen slave";
-	dzen.cur_line  = 0;
-	dzen.ret_val   = 0;
-	dzen.title_win.alignment = ALIGNCENTER;
-	dzen.slave_win.alignment = ALIGNLEFT;
-	dzen.fnt = FONT;
-	dzen.bg  = BGCOLOR;
-	dzen.fg  = FGCOLOR;
-	dzen.slave_win.max_lines  = 0;
-	dzen.running = True;
-	dzen.xinescreen = 0;
-	dzen.tsupdate = 0;
-	dzen.line_height = 0;
-	dzen.title_win.expand = noexpand;
+	nezd.title_win.name = "nezd title";
+	nezd.slave_win.name = "nezd slave";
+	nezd.cur_line  = 0;
+	nezd.ret_val   = 0;
+	nezd.title_win.alignment = ALIGNCENTER;
+	nezd.slave_win.alignment = ALIGNLEFT;
+	nezd.fnt = FONT;
+	nezd.bg  = BGCOLOR;
+	nezd.fg  = FGCOLOR;
+	nezd.slave_win.max_lines  = 0;
+	nezd.running = True;
+	nezd.xinescreen = 0;
+	nezd.tsupdate = 0;
+	nezd.line_height = 0;
+	nezd.title_win.expand = noexpand;
 
 	/* Connect to X server */
 	x_connect();
@@ -953,8 +953,8 @@ main(int argc, char *argv[]) {
 	for(i = 1; i < argc; i++)
 		if(!strncmp(argv[i], "-l", 3)){
 			if(++i < argc) {
-				dzen.slave_win.max_lines = atoi(argv[i]);
-				if(dzen.slave_win.max_lines)
+				nezd.slave_win.max_lines = atoi(argv[i]);
+				if(nezd.slave_win.max_lines)
 					init_input_buffer();
 			}
 		}
@@ -981,68 +981,68 @@ main(int argc, char *argv[]) {
 			}
 		}
 		else if(!strncmp(argv[i], "-u", 3)){
-			dzen.tsupdate = True;
+			nezd.tsupdate = True;
 		}
 		else if(!strncmp(argv[i], "-expand", 8)){
 			if(++i < argc) {
 				switch(argv[i][0]){
 					case 'l':
-						dzen.title_win.expand = left;
+						nezd.title_win.expand = left;
 						break;
 					case 'c':
-						dzen.title_win.expand = both;
+						nezd.title_win.expand = both;
 						break;
 					case 'r':
-						dzen.title_win.expand = right;
+						nezd.title_win.expand = right;
 						break;
 					default:
-						dzen.title_win.expand = noexpand;
+						nezd.title_win.expand = noexpand;
 				}
 			}
 		}
 		else if(!strncmp(argv[i], "-p", 3)) {
-			dzen.ispersistent = True;
+			nezd.ispersistent = True;
 			if (i+1 < argc) {
-				dzen.timeout = strtoul(argv[i+1], &endptr, 10);
+				nezd.timeout = strtoul(argv[i+1], &endptr, 10);
 				if(*endptr)
-					dzen.timeout = 0;
+					nezd.timeout = 0;
 				else
 					i++;
 			}
 		}
 		else if(!strncmp(argv[i], "-ta", 4)) {
-			if(++i < argc) dzen.title_win.alignment = alignment_from_char(argv[i][0]);
+			if(++i < argc) nezd.title_win.alignment = alignment_from_char(argv[i][0]);
 		}
 		else if(!strncmp(argv[i], "-sa", 4)) {
-			if(++i < argc) dzen.slave_win.alignment = alignment_from_char(argv[i][0]);
+			if(++i < argc) nezd.slave_win.alignment = alignment_from_char(argv[i][0]);
 		}
 		else if(!strncmp(argv[i], "-m", 3)) {
-			dzen.slave_win.ismenu = True;
+			nezd.slave_win.ismenu = True;
 			if(i+1 < argc) {
 				if( argv[i+1][0] == 'v') {
 					++i;
 					break;
 				}
-				dzen.slave_win.ishmenu = (argv[i+1][0] == 'h') ? ++i, True : False;
+				nezd.slave_win.ishmenu = (argv[i+1][0] == 'h') ? ++i, True : False;
 			}
 		}
 		else if(!strncmp(argv[i], "-fn", 4)) {
-			if(++i < argc) dzen.fnt = argv[i];
+			if(++i < argc) nezd.fnt = argv[i];
 		}
 		else if(!strncmp(argv[i], "-e", 3)) {
 			if(++i < argc) action_string = argv[i];
 		}
 		else if(!strncmp(argv[i], "-title-name", 12)) {
-			if(++i < argc) dzen.title_win.name = argv[i];
+			if(++i < argc) nezd.title_win.name = argv[i];
 		}
 		else if(!strncmp(argv[i], "-slave-name", 12)) {
-			if(++i < argc) dzen.slave_win.name = argv[i];
+			if(++i < argc) nezd.slave_win.name = argv[i];
 		}
 		else if(!strncmp(argv[i], "-bg", 4)) {
-			if(++i < argc) dzen.bg = argv[i];
+			if(++i < argc) nezd.bg = argv[i];
 		}
 		else if(!strncmp(argv[i], "-fg", 4)) {
-			if(++i < argc) dzen.fg = argv[i];
+			if(++i < argc) nezd.fg = argv[i];
 		}
 		else if(!strncmp(argv[i], "-x", 3)) {
 			if(++i < argc) {
@@ -1094,24 +1094,24 @@ main(int argc, char *argv[]) {
 				fnpre = estrdup(argv[i]);
 			}
 		}
-#ifdef DZEN_XINERAMA
+#ifdef NEZD_XINERAMA
 		else if(!strncmp(argv[i], "-xs", 4)) {
-			if(++i < argc) dzen.xinescreen = atoi(argv[i]);
+			if(++i < argc) nezd.xinescreen = atoi(argv[i]);
 		}
 #endif
 		else if(!strncmp(argv[i], "-dock", 6))
 			use_ewmh_dock = 1;
 		else if(!strncmp(argv[i], "-v", 3)) {
-			printf("dzen-"VERSION", (C)opyright 2007-2009 Robert Manea\n");
+			printf("nezd-"VERSION", (C)opyright 2007-2009 Robert Manea\n");
 			printf(
 			"Enabled optional features: "
-#ifdef DZEN_XPM
+#ifdef NEZD_XPM
 			"XPM "
 #endif
-#ifdef DZEN_XFT
+#ifdef NEZD_XFT
 			"XFT "
 #endif
-#ifdef DZEN_XINERAMA
+#ifdef NEZD_XINERAMA
 			"XINERAMA "
 #endif
 			"\n"
@@ -1119,19 +1119,19 @@ main(int argc, char *argv[]) {
 			return EXIT_SUCCESS;
 		}
 		else
-			eprint("usage: dzen2 [-v] [-p [seconds]] [-m [v|h]] [-ta <l|c|r>] [-sa <l|c|r>]\n"
+			eprint("usage: nezd [-v] [-p [seconds]] [-m [v|h]] [-ta <l|c|r>] [-sa <l|c|r>]\n"
                                    "             [-x <pixel|percent%>] [-y <pixel|percent%>] [-w <pixel|percent%>]\n"
                                    "             [-h <pixel|percent%>] [-tw <pixel|percent%>] [-u]\n"
 				   "             [-e <string>] [-l <lines>]  [-fn <font>] [-bg <color>] [-fg <color>]\n"
 				   "             [-geometry <geometry string>] [-expand <left|right>] [-dock]\n"
 				   "             [-title-name <string>] [-slave-name <string>]\n"
-#ifdef DZEN_XINERAMA
+#ifdef NEZD_XINERAMA
 				   "             [-xs <screen>]\n"
 #endif
 				  );
 
-	if(dzen.tsupdate && !dzen.slave_win.max_lines)
-		dzen.tsupdate = False;
+	if(nezd.tsupdate && !nezd.slave_win.max_lines)
+		nezd.tsupdate = False;
 
 	if (!geometry.title_width) {
 		geometry.title_width = geometry.width;
@@ -1140,16 +1140,16 @@ main(int argc, char *argv[]) {
 	}
 
 	if(!setlocale(LC_ALL, "") || !XSupportsLocale())
-		puts("dzen: locale not available, expect problems with fonts.\n");
+		puts("nezd: locale not available, expect problems with fonts.\n");
 
 	if(action_string)
 		fill_ev_table(action_string);
 	else {
-		if(!dzen.slave_win.max_lines) {
+		if(!nezd.slave_win.max_lines) {
 			char edef[] = "button3=exit:13";
 			fill_ev_table(edef);
 		}
-		else if(dzen.slave_win.ishmenu) {
+		else if(nezd.slave_win.ishmenu) {
 			char edef[] = "enterslave=grabkeys;leaveslave=ungrabkeys;"
 				"button4=scrollup;button5=scrolldown;"
 				"key_Left=scrollup;key_Right=scrolldown;"
@@ -1170,32 +1170,32 @@ main(int argc, char *argv[]) {
 
 	if((find_event(onexit) != -1)
 			&& (setup_signal(SIGTERM, catch_sigterm) == SIG_ERR))
-		fprintf(stderr, "dzen: error hooking SIGTERM\n");
+		fprintf(stderr, "nezd: error hooking SIGTERM\n");
 
 	if((find_event(sigusr1) != -1)
 			&& (setup_signal(SIGUSR1, catch_sigusr1) == SIG_ERR))
-		fprintf(stderr, "dzen: error hooking SIGUSR1\n");
+		fprintf(stderr, "nezd: error hooking SIGUSR1\n");
 
 	if((find_event(sigusr2) != -1)
 		&& (setup_signal(SIGUSR2, catch_sigusr2) == SIG_ERR))
-		fprintf(stderr, "dzen: error hooking SIGUSR2\n");
+		fprintf(stderr, "nezd: error hooking SIGUSR2\n");
 
 	if(setup_signal(SIGALRM, catch_alrm) == SIG_ERR)
-		fprintf(stderr, "dzen: error hooking SIGALARM\n");
+		fprintf(stderr, "nezd: error hooking SIGALARM\n");
 
-	if(dzen.slave_win.ishmenu &&
-			!dzen.slave_win.max_lines)
-		dzen.slave_win.max_lines = 1;
+	if(nezd.slave_win.ishmenu &&
+			!nezd.slave_win.max_lines)
+		nezd.slave_win.max_lines = 1;
 
 
 	x_create_windows(&geometry, use_ewmh_dock);
 
-	if(!dzen.slave_win.ishmenu)
-		x_map_window(dzen.title_win.win);
+	if(!nezd.slave_win.ishmenu)
+		x_map_window(nezd.title_win.win);
 	else {
-		XMapRaised(dzen.dpy, dzen.slave_win.win);
-		for(i=0; i < dzen.slave_win.max_lines; i++)
-			XMapWindow(dzen.dpy, dzen.slave_win.line[i]);
+		XMapRaised(nezd.dpy, nezd.slave_win.win);
+		for(i=0; i < nezd.slave_win.max_lines; i++)
+			XMapWindow(nezd.dpy, nezd.slave_win.line[i]);
 	}
 
 	if( fnpre != NULL )
@@ -1209,8 +1209,8 @@ main(int argc, char *argv[]) {
 	do_action(onexit);
 	clean_up();
 
-	if(dzen.ret_val)
-		return dzen.ret_val;
+	if(nezd.ret_val)
+		return nezd.ret_val;
 
 	return EXIT_SUCCESS;
 }

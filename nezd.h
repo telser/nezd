@@ -7,10 +7,10 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
-#ifdef DZEN_XINERAMA
+#ifdef NEZD_XINERAMA
 #include <X11/extensions/Xinerama.h>
 #endif
-#ifdef DZEN_XFT
+#ifdef NEZD_XFT
 #include <X11/Xft/Xft.h>
 #endif
 
@@ -50,7 +50,7 @@ enum { ColFG, ColBG, ColLast };
 /* exapansion directions */
 enum { noexpand, left, right, both };
 
-typedef struct DZEN Dzen;
+typedef struct NEZD Nezd;
 typedef struct Geometry Geometry;
 typedef struct Fnt Fnt;
 typedef struct TW TWIN;
@@ -69,7 +69,7 @@ struct Fnt {
 	int ascent;
 	int descent;
 	int height;
-#ifdef DZEN_XFT
+#ifdef NEZD_XFT
 	XftFont *xftfont;
 	XGlyphInfo *extents;
 	int width;
@@ -139,7 +139,7 @@ struct SW {
 	Bool ismapped;
 };
 
-struct DZEN {
+struct NEZD {
 	int x, y, w, h;
 	Bool running;
 	unsigned long norm[ColLast];
@@ -171,11 +171,11 @@ struct DZEN {
 	long cur_line;
 	int ret_val;
 
-	/* should always be 0 if DZEN_XINERAMA not defined */
+	/* should always be 0 if NEZD_XINERAMA not defined */
 	int xinescreen;
 };
 
-extern Dzen dzen;
+extern Nezd nezd;
 
 void free_buffer(void);
 void x_draw_body(void);

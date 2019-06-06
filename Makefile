@@ -1,4 +1,4 @@
-# dzen2
+# nezd
 #   (C)opyright MMVII Robert Manea
 
 include config.mk
@@ -6,10 +6,10 @@ include config.mk
 SRC = draw.c main.c util.c action.c
 OBJ = ${SRC:.c=.o}
 
-all: options dzen2
+all: options nezd
 
 options:
-	@echo dzen2 build options:
+	@echo nezd build options:
 	@echo "CFLAGS   = ${CFLAGS}"
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
@@ -19,9 +19,9 @@ options:
 	@echo CC $<
 	@${CC} -c ${CFLAGS} $<
 
-${OBJ}: dzen.h action.h config.mk
+${OBJ}: nezd.h action.h config.mk
 
-dzen2: ${OBJ}
+nezd: ${OBJ}
 	@echo LD $@
 	@${LD} -o $@ ${OBJ} ${LDFLAGS}
 	@strip $@
@@ -29,31 +29,31 @@ dzen2: ${OBJ}
 
 clean:
 	@echo cleaning
-	@rm -f dzen2 ${OBJ} dzen2-${VERSION}.tar.gz
+	@rm -f nezd ${OBJ} nezd-${VERSION}.tar.gz
 
 dist: clean
 	@echo creating dist tarball
-	@mkdir -p dzen2-${VERSION}
-	@mkdir -p dzen2-${VERSION}/gadgets
-	@mkdir -p dzen2-${VERSION}/bitmaps
-	@cp -R CREDITS LICENSE Makefile INSTALL README.dzen README help config.mk action.h dzen.h ${SRC} dzen2-${VERSION}
-	@cp -R gadgets/Makefile  gadgets/config.mk gadgets/README.dbar gadgets/textwidth.c gadgets/README.textwidth gadgets/dbar.c gadgets/gdbar.c gadgets/README.gdbar gadgets/gcpubar.c gadgets/README.gcpubar gadgets/kittscanner.sh gadgets/README.kittscanner gadgets/noisyalert.sh dzen2-${VERSION}/gadgets
-	@cp -R bitmaps/alert.xbm bitmaps/ball.xbm bitmaps/battery.xbm bitmaps/envelope.xbm bitmaps/volume.xbm bitmaps/pause.xbm bitmaps/play.xbm bitmaps/music.xbm  dzen2-${VERSION}/bitmaps
-	@tar -cf dzen2-${VERSION}.tar dzen2-${VERSION}
-	@gzip dzen2-${VERSION}.tar
-	@rm -rf dzen2-${VERSION}
+	@mkdir -p nezd-${VERSION}
+	@mkdir -p nezd-${VERSION}/gadgets
+	@mkdir -p nezd-${VERSION}/bitmaps
+	@cp -R CREDITS LICENSE Makefile INSTALL README.nezd README help config.mk action.h nezd.h ${SRC} nezd-${VERSION}
+	@cp -R gadgets/Makefile  gadgets/config.mk gadgets/README.dbar gadgets/textwidth.c gadgets/README.textwidth gadgets/dbar.c gadgets/gdbar.c gadgets/README.gdbar gadgets/gcpubar.c gadgets/README.gcpubar gadgets/kittscanner.sh gadgets/README.kittscanner gadgets/noisyalert.sh nezd-${VERSION}/gadgets
+	@cp -R bitmaps/alert.xbm bitmaps/ball.xbm bitmaps/battery.xbm bitmaps/envelope.xbm bitmaps/volume.xbm bitmaps/pause.xbm bitmaps/play.xbm bitmaps/music.xbm  nezd-${VERSION}/bitmaps
+	@tar -cf nezd-${VERSION}.tar nezd-${VERSION}
+	@gzip nezd-${VERSION}.tar
+	@rm -rf nezd-${VERSION}
 
 install: all
 	@echo installing executable file to ${DESTDIR}${PREFIX}/bin
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
-	@cp -f dzen2 ${DESTDIR}${PREFIX}/bin
-	@chmod 755 ${DESTDIR}${PREFIX}/bin/dzen2
+	@cp -f nezd ${DESTDIR}${PREFIX}/bin
+	@chmod 755 ${DESTDIR}${PREFIX}/bin/nezd
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
-	@cp -f dzen2.1 ${DESTDIR}${MANPREFIX}/man1/dzen2.1
+	@cp -f nezd.1 ${DESTDIR}${MANPREFIX}/man1/nezd.1
 
 uninstall:
 	@echo removing executable file from ${DESTDIR}${PREFIX}/bin
-	@rm -f ${DESTDIR}${PREFIX}/bin/dzen2
-	@rm -f ${DESTDIR}${MANPREFIX}/man1/dzen2.1
+	@rm -f ${DESTDIR}${PREFIX}/bin/nezd
+	@rm -f ${DESTDIR}${MANPREFIX}/man1/nezd.1
 
 .PHONY: all options clean dist install uninstall

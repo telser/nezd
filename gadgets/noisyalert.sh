@@ -2,9 +2,9 @@
 #
 # (c) 2007 by Robert Manea
 #
-# A noisy alert for dzen
+# A noisy alert for nezd
 # 
-# Syntax noisyalert.sh [Message] [TIMEOUT in seconds] | dzen2
+# Syntax noisyalert.sh [Message] [TIMEOUT in seconds] | nezd
 
 ALERTMSG=${1:-"Alert"}
 ALERTSEC=${2:-10}

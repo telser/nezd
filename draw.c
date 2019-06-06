@@ -5,13 +5,13 @@
 *
 */
 
-#include "dzen.h"
+#include "nezd.h"
 #include "action.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef DZEN_XPM
+#ifdef NEZD_XPM
 #include <X11/xpm.h>
 #endif
 
@@ -71,7 +71,7 @@ int get_token(const char*  line, int * t, char **tval);
 
 static unsigned int
 textnw(Fnt *font, const char *text, unsigned int len) {
-#ifndef DZEN_XFT
+#ifndef NEZD_XFT
 	XRectangle r;
 
 	if(font->set) {
@@ -80,10 +80,10 @@ textnw(Fnt *font, const char *text, unsigned int len) {
 	}
 	return XTextWidth(font->xfont, text, len);
 #else
-	XftTextExtentsUtf8(dzen.dpy, dzen.font.xftfont, (unsigned const char *) text, strlen(text), dzen.font.extents);
-	if(dzen.font.extents->height > dzen.font.height)
-		dzen.font.height = dzen.font.extents->height;
-	return dzen.font.extents->xOff;
+	XftTextExtentsUtf8(nezd.dpy, nezd.font.xftfont, (unsigned const char *) text, strlen(text), nezd.font.extents);
+	if(nezd.font.extents->height > nezd.font.height)
+		nezd.font.height = nezd.font.extents->height;
+	return nezd.font.extents->xOff;
 #endif
 }
 
@@ -91,14 +91,14 @@ textnw(Fnt *font, const char *text, unsigned int len) {
 void
 drawtext(const char *text, int reverse, int line, int align) {
 	if(!reverse) {
-		XSetForeground(dzen.dpy, dzen.gc, dzen.norm[ColBG]);
-		XFillRectangle(dzen.dpy, dzen.slave_win.drawable[line], dzen.gc, 0, 0, dzen.w, dzen.h);
-		XSetForeground(dzen.dpy, dzen.gc, dzen.norm[ColFG]);
+		XSetForeground(nezd.dpy, nezd.gc, nezd.norm[ColBG]);
+		XFillRectangle(nezd.dpy, nezd.slave_win.drawable[line], nezd.gc, 0, 0, nezd.w, nezd.h);
+		XSetForeground(nezd.dpy, nezd.gc, nezd.norm[ColFG]);
 	}
 	else {
-		XSetForeground(dzen.dpy, dzen.rgc, dzen.norm[ColFG]);
-		XFillRectangle(dzen.dpy, dzen.slave_win.drawable[line], dzen.rgc, 0, 0, dzen.w, dzen.h);
-		XSetForeground(dzen.dpy, dzen.rgc, dzen.norm[ColBG]);
+		XSetForeground(nezd.dpy, nezd.rgc, nezd.norm[ColFG]);
+		XFillRectangle(nezd.dpy, nezd.slave_win.drawable[line], nezd.rgc, 0, 0, nezd.w, nezd.h);
+		XSetForeground(nezd.dpy, nezd.rgc, nezd.norm[ColBG]);
 	}
 
 	parse_line(text, line, align, reverse, 0);
@@ -106,10 +106,10 @@ drawtext(const char *text, int reverse, int line, int align) {
 
 long
 getcolor(const char *colstr) {
-	Colormap cmap = DefaultColormap(dzen.dpy, dzen.screen);
+	Colormap cmap = DefaultColormap(nezd.dpy, nezd.screen);
 	XColor color;
 
-	if(!XAllocNamedColor(dzen.dpy, cmap, colstr, &color, &color))
+	if(!XAllocNamedColor(nezd.dpy, cmap, colstr, &color, &color))
 		return -1;
 
 	return color.pixel;
@@ -117,55 +117,55 @@ getcolor(const char *colstr) {
 
 void
 setfont(const char *fontstr) {
-#ifndef DZEN_XFT
+#ifndef NEZD_XFT
 	char *def, **missing;
 	int i, n;
 
 	missing = NULL;
-	if(dzen.font.set)
-		XFreeFontSet(dzen.dpy, dzen.font.set);
+	if(nezd.font.set)
+		XFreeFontSet(nezd.dpy, nezd.font.set);
 
-	dzen.font.set = XCreateFontSet(dzen.dpy, fontstr, &missing, &n, &def);
+	nezd.font.set = XCreateFontSet(nezd.dpy, fontstr, &missing, &n, &def);
 	if(missing)
 		XFreeStringList(missing);
 
-	if(dzen.font.set) {
+	if(nezd.font.set) {
 		XFontSetExtents *font_extents;
 		XFontStruct **xfonts;
 		char **font_names;
-		dzen.font.ascent = dzen.font.descent = 0;
-		font_extents = XExtentsOfFontSet(dzen.font.set);
-		n = XFontsOfFontSet(dzen.font.set, &xfonts, &font_names);
-		for(i = 0, dzen.font.ascent = 0, dzen.font.descent = 0; i < n; i++) {
-			if(dzen.font.ascent < (*xfonts)->ascent)
-				dzen.font.ascent = (*xfonts)->ascent;
-			if(dzen.font.descent < (*xfonts)->descent)
-				dzen.font.descent = (*xfonts)->descent;
+		nezd.font.ascent = nezd.font.descent = 0;
+		font_extents = XExtentsOfFontSet(nezd.font.set);
+		n = XFontsOfFontSet(nezd.font.set, &xfonts, &font_names);
+		for(i = 0, nezd.font.ascent = 0, nezd.font.descent = 0; i < n; i++) {
+			if(nezd.font.ascent < (*xfonts)->ascent)
+				nezd.font.ascent = (*xfonts)->ascent;
+			if(nezd.font.descent < (*xfonts)->descent)
+				nezd.font.descent = (*xfonts)->descent;
 			xfonts++;
 		}
 	}
 	else {
-		if(dzen.font.xfont)
-			XFreeFont(dzen.dpy, dzen.font.xfont);
-		dzen.font.xfont = NULL;
-		if(!(dzen.font.xfont = XLoadQueryFont(dzen.dpy, fontstr)))
-			eprint("dzen: error, cannot load font: '%s'\n", fontstr);
-		dzen.font.ascent = dzen.font.xfont->ascent;
-		dzen.font.descent = dzen.font.xfont->descent;
+		if(nezd.font.xfont)
+			XFreeFont(nezd.dpy, nezd.font.xfont);
+		nezd.font.xfont = NULL;
+		if(!(nezd.font.xfont = XLoadQueryFont(nezd.dpy, fontstr)))
+			eprint("nezd: error, cannot load font: '%s'\n", fontstr);
+		nezd.font.ascent = nezd.font.xfont->ascent;
+		nezd.font.descent = nezd.font.xfont->descent;
 	}
-	dzen.font.height = dzen.font.ascent + dzen.font.descent;
+	nezd.font.height = nezd.font.ascent + nezd.font.descent;
 #else
-        if(dzen.font.xftfont)
-           XftFontClose(dzen.dpy, dzen.font.xftfont);
-	dzen.font.xftfont = XftFontOpenXlfd(dzen.dpy, dzen.screen, fontstr);
-	if(!dzen.font.xftfont)
-	   dzen.font.xftfont = XftFontOpenName(dzen.dpy, dzen.screen, fontstr);
-	if(!dzen.font.xftfont)
+        if(nezd.font.xftfont)
+           XftFontClose(nezd.dpy, nezd.font.xftfont);
+	nezd.font.xftfont = XftFontOpenXlfd(nezd.dpy, nezd.screen, fontstr);
+	if(!nezd.font.xftfont)
+	   nezd.font.xftfont = XftFontOpenName(nezd.dpy, nezd.screen, fontstr);
+	if(!nezd.font.xftfont)
 	   eprint("error, cannot load font: '%s'\n", fontstr);
-	dzen.font.extents = malloc(sizeof(XGlyphInfo));
-	XftTextExtentsUtf8(dzen.dpy, dzen.font.xftfont, (unsigned const char *) fontstr, strlen(fontstr), dzen.font.extents);
-	dzen.font.height = dzen.font.xftfont->ascent + dzen.font.xftfont->descent;
-	dzen.font.width = (dzen.font.extents->width)/strlen(fontstr);
+	nezd.font.extents = malloc(sizeof(XGlyphInfo));
+	XftTextExtentsUtf8(nezd.dpy, nezd.font.xftfont, (unsigned const char *) fontstr, strlen(fontstr), nezd.font.extents);
+	nezd.font.height = nezd.font.xftfont->ascent + nezd.font.xftfont->descent;
+	nezd.font.width = (nezd.font.extents->width)/strlen(fontstr);
 #endif
 }
 
@@ -213,11 +213,11 @@ setcolor(Drawable *pm, int x, int width, long tfg, long tbg, int reverse, int no
 	if(nobg)
 		return;
 
-	XSetForeground(dzen.dpy, dzen.tgc, reverse ? tfg : tbg);
-	XFillRectangle(dzen.dpy, *pm, dzen.tgc, x, 0, width, dzen.line_height);
+	XSetForeground(nezd.dpy, nezd.tgc, reverse ? tfg : tbg);
+	XFillRectangle(nezd.dpy, *pm, nezd.tgc, x, 0, width, nezd.line_height);
 
-	XSetForeground(dzen.dpy, dzen.tgc, reverse ? tbg : tfg);
-	XSetBackground(dzen.dpy, dzen.tgc, reverse ? tfg : tbg);
+	XSetForeground(nezd.dpy, nezd.tgc, reverse ? tbg : tfg);
+	XSetBackground(nezd.dpy, nezd.tgc, reverse ? tfg : tbg);
 }
 
 int 
@@ -333,14 +333,14 @@ search_icon_cache(const char* name) {
 	return -1;
 }
 
-#ifdef DZEN_XPM
+#ifdef NEZD_XPM
 static void
 cache_icon(const char* name, Pixmap pm, int w, int h) {
 	if(icon_cnt >= MAX_ICON_CACHE)
 		icon_cnt = 0;
 
 	if(icons[icon_cnt].p)
-		XFreePixmap(dzen.dpy, icons[icon_cnt].p);
+		XFreePixmap(nezd.dpy, icons[icon_cnt].p);
 
 	strncpy(icons[icon_cnt].name, name, ARGLEN);
 	icons[icon_cnt].w = w;
@@ -382,13 +382,13 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 	char *tval=NULL;
 
 	/* X stuff */
-	long lastfg = dzen.norm[ColFG], lastbg = dzen.norm[ColBG];
+	long lastfg = nezd.norm[ColFG], lastbg = nezd.norm[ColBG];
 	Fnt *cur_fnt = NULL;
-#ifndef DZEN_XFT
+#ifndef NEZD_XFT
 	XGCValues gcv;
 #endif
 	Drawable pm=0, bm;
-#ifdef DZEN_XPM
+#ifdef NEZD_XPM
 	int free_xpm_attrib = 0;
 	Pixmap xpm_pm;
 	XpmAttributes xpma;
@@ -398,95 +398,95 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 	/* icon cache */
 	int ip;
 
-#ifdef DZEN_XFT
+#ifdef NEZD_XFT
 	XftDraw *xftd=NULL;
 	XftColor xftc;
 	char *xftcs;
 	char *xftcs_bg;
 
 	/* set default fg/bg for XFT */
-	xftcs = estrdup(dzen.fg);
-	xftcs_bg = estrdup(dzen.bg);
+	xftcs = estrdup(nezd.fg);
+	xftcs_bg = estrdup(nezd.bg);
 #endif
 
 	/* parse line and return the text without control commands */
 	if(nodraw) {
 		rbuf = emalloc(MAX_LINE_LEN);
 		rbuf[0] = '\0';
-		if( (lnr + dzen.slave_win.first_line_vis) >= dzen.slave_win.tcnt)
+		if( (lnr + nezd.slave_win.first_line_vis) >= nezd.slave_win.tcnt)
 			line = NULL;
 		else
-			line = dzen.slave_win.tbuf[dzen.slave_win.first_line_vis+lnr];
+			line = nezd.slave_win.tbuf[nezd.slave_win.first_line_vis+lnr];
 
 	}
 	/* parse line and render text */
 	else {
-		h = dzen.font.height;
-		py = (dzen.line_height - h) / 2;
+		h = nezd.font.height;
+		py = (nezd.line_height - h) / 2;
 		xorig[LNR2WINDOW(lnr)] = 0;
 		
 		if(lnr != -1) {
-			pm = XCreatePixmap(dzen.dpy, RootWindow(dzen.dpy, DefaultScreen(dzen.dpy)), dzen.slave_win.width,
-					dzen.line_height, DefaultDepth(dzen.dpy, dzen.screen));
+			pm = XCreatePixmap(nezd.dpy, RootWindow(nezd.dpy, DefaultScreen(nezd.dpy)), nezd.slave_win.width,
+					nezd.line_height, DefaultDepth(nezd.dpy, nezd.screen));
 		}
 		else {
-			pm = XCreatePixmap(dzen.dpy, RootWindow(dzen.dpy, DefaultScreen(dzen.dpy)), dzen.title_win.width,
-					dzen.line_height, DefaultDepth(dzen.dpy, dzen.screen));
+			pm = XCreatePixmap(nezd.dpy, RootWindow(nezd.dpy, DefaultScreen(nezd.dpy)), nezd.title_win.width,
+					nezd.line_height, DefaultDepth(nezd.dpy, nezd.screen));
 		}
 
-#ifdef DZEN_XFT
-		xftd = XftDrawCreate(dzen.dpy, pm, DefaultVisual(dzen.dpy, dzen.screen), 
-				DefaultColormap(dzen.dpy, dzen.screen));
+#ifdef NEZD_XFT
+		xftd = XftDrawCreate(nezd.dpy, pm, DefaultVisual(nezd.dpy, nezd.screen), 
+				DefaultColormap(nezd.dpy, nezd.screen));
 #endif
 
 		if(!reverse) {
-			XSetForeground(dzen.dpy, dzen.tgc, dzen.norm[ColBG]);
-#ifdef DZEN_XPM
-			xpms.pixel = dzen.norm[ColBG];
+			XSetForeground(nezd.dpy, nezd.tgc, nezd.norm[ColBG]);
+#ifdef NEZD_XPM
+			xpms.pixel = nezd.norm[ColBG];
 #endif
-#ifdef DZEN_XFT
-			xftcs_bg = estrdup(dzen.bg);
+#ifdef NEZD_XFT
+			xftcs_bg = estrdup(nezd.bg);
 #endif
 		}
 		else {
-			XSetForeground(dzen.dpy, dzen.tgc, dzen.norm[ColFG]);
-#ifdef DZEN_XPM
-			xpms.pixel = dzen.norm[ColFG];
+			XSetForeground(nezd.dpy, nezd.tgc, nezd.norm[ColFG]);
+#ifdef NEZD_XPM
+			xpms.pixel = nezd.norm[ColFG];
 #endif
 		}
-		XFillRectangle(dzen.dpy, pm, dzen.tgc, 0, 0, dzen.w, dzen.h);
+		XFillRectangle(nezd.dpy, pm, nezd.tgc, 0, 0, nezd.w, nezd.h);
 
 		if(!reverse) {
-			XSetForeground(dzen.dpy, dzen.tgc, dzen.norm[ColFG]);
+			XSetForeground(nezd.dpy, nezd.tgc, nezd.norm[ColFG]);
 		}
 		else {
-			XSetForeground(dzen.dpy, dzen.tgc, dzen.norm[ColBG]);
+			XSetForeground(nezd.dpy, nezd.tgc, nezd.norm[ColBG]);
 		}
 
-#ifdef DZEN_XPM
+#ifdef NEZD_XPM
 		xpms.name = NULL;
 		xpms.value = (char *)"none";
 
-		xpma.colormap = DefaultColormap(dzen.dpy, dzen.screen);
-		xpma.depth = DefaultDepth(dzen.dpy, dzen.screen);
-		xpma.visual = DefaultVisual(dzen.dpy, dzen.screen);
+		xpma.colormap = DefaultColormap(nezd.dpy, nezd.screen);
+		xpma.depth = DefaultDepth(nezd.dpy, nezd.screen);
+		xpma.visual = DefaultVisual(nezd.dpy, nezd.screen);
 		xpma.colorsymbols = &xpms;
 		xpma.numsymbols = 1;
 		xpma.valuemask = XpmColormap|XpmDepth|XpmVisual|XpmColorSymbols;
 #endif
 
-#ifndef DZEN_XFT 
-		if(!dzen.font.set){
-			gcv.font = dzen.font.xfont->fid;
-			XChangeGC(dzen.dpy, dzen.tgc, GCFont, &gcv);
+#ifndef NEZD_XFT 
+		if(!nezd.font.set){
+			gcv.font = nezd.font.xfont->fid;
+			XChangeGC(nezd.dpy, nezd.tgc, GCFont, &gcv);
 		}
 #endif
-		cur_fnt = &dzen.font;
+		cur_fnt = &nezd.font;
 
-		if( lnr != -1 && (lnr + dzen.slave_win.first_line_vis >= dzen.slave_win.tcnt)) {
-			XCopyArea(dzen.dpy, pm, dzen.slave_win.drawable[lnr], dzen.gc,
-					0, 0, px, dzen.line_height, xorig[LNR2WINDOW(lnr)], 0);
-			XFreePixmap(dzen.dpy, pm);
+		if( lnr != -1 && (lnr + nezd.slave_win.first_line_vis >= nezd.slave_win.tcnt)) {
+			XCopyArea(nezd.dpy, pm, nezd.slave_win.drawable[lnr], nezd.gc,
+					0, 0, px, nezd.line_height, xorig[LNR2WINDOW(lnr)], 0);
+			XFreePixmap(nezd.dpy, pm);
 			return NULL;
 		}
 	}
@@ -509,43 +509,43 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 						case icon:
 							if(MAX_ICON_CACHE && (ip=search_icon_cache(tval)) != -1) {
 								int y;
-								XCopyArea(dzen.dpy, icons[ip].p, pm, dzen.tgc,
+								XCopyArea(nezd.dpy, icons[ip].p, pm, nezd.tgc,
 										0, 0, icons[ip].w, icons[ip].h, px, y=(set_posy ? py :
-										(dzen.line_height >= (signed)icons[ip].h ?
-										(dzen.line_height - icons[ip].h)/2 : 0)));
+										(nezd.line_height >= (signed)icons[ip].h ?
+										(nezd.line_height - icons[ip].h)/2 : 0)));
 								px += !pos_is_fixed ? icons[ip].w : 0;
 								max_y = MAX(max_y, y+icons[ip].h);
 							} else {
 								int y;
-								if(XReadBitmapFile(dzen.dpy, pm, tval, &bm_w,
+								if(XReadBitmapFile(nezd.dpy, pm, tval, &bm_w,
 											&bm_h, &bm, &bm_xh, &bm_yh) == BitmapSuccess
-										&& (h/2 + px + (signed)bm_w < dzen.w)) {
+										&& (h/2 + px + (signed)bm_w < nezd.w)) {
 									setcolor(&pm, px, bm_w, lastfg, lastbg, reverse, nobg);
 
-									XCopyPlane(dzen.dpy, bm, pm, dzen.tgc,
+									XCopyPlane(nezd.dpy, bm, pm, nezd.tgc,
 											0, 0, bm_w, bm_h, px, y=(set_posy ? py :
-											(dzen.line_height >= (int)bm_h ?
-												(dzen.line_height - (int)bm_h)/2 : 0)), 1);
-									XFreePixmap(dzen.dpy, bm);
+											(nezd.line_height >= (int)bm_h ?
+												(nezd.line_height - (int)bm_h)/2 : 0)), 1);
+									XFreePixmap(nezd.dpy, bm);
 									px += !pos_is_fixed ? bm_w : 0;
 									max_y = MAX(max_y, y+bm_h);
 								}
-#ifdef DZEN_XPM
-								else if(XpmReadFileToPixmap(dzen.dpy, dzen.title_win.win, tval, &xpm_pm, NULL, &xpma) == XpmSuccess) {
+#ifdef NEZD_XPM
+								else if(XpmReadFileToPixmap(nezd.dpy, nezd.title_win.win, tval, &xpm_pm, NULL, &xpma) == XpmSuccess) {
 									setcolor(&pm, px, xpma.width, lastfg, lastbg, reverse, nobg);
 
 									if(MAX_ICON_CACHE)
 										cache_icon(tval, xpm_pm, xpma.width, xpma.height);
 
-									XCopyArea(dzen.dpy, xpm_pm, pm, dzen.tgc,
+									XCopyArea(nezd.dpy, xpm_pm, pm, nezd.tgc,
 											0, 0, xpma.width, xpma.height, px, y=(set_posy ? py :
-											(dzen.line_height >= (int)xpma.height ?
-												(dzen.line_height - (int)xpma.height)/2 : 0)));
+											(nezd.line_height >= (int)xpma.height ?
+												(nezd.line_height - (int)xpma.height)/2 : 0)));
 									px += !pos_is_fixed ? xpma.width : 0;
 									max_y = MAX(max_y, y+xpma.height);
 
 									/* freed by cache_icon() */
-									//XFreePixmap(dzen.dpy, xpm_pm);
+									//XFreePixmap(nezd.dpy, xpm_pm);
 									free_xpm_attrib = 1;
 								}
 #endif
@@ -555,17 +555,17 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 
 						case rect:
 							get_rect_vals(tval, &rectw, &recth, &rectx, &recty);
-							recth = recth > dzen.line_height ? dzen.line_height : recth;
+							recth = recth > nezd.line_height ? nezd.line_height : recth;
 							if(set_posy)
 								py += recty;
-							recty =	recty == 0 ? (dzen.line_height - recth)/2 :
-								(dzen.line_height - recth)/2 + recty;
+							recty =	recty == 0 ? (nezd.line_height - recth)/2 :
+								(nezd.line_height - recth)/2 + recty;
 							px += !pos_is_fixed ? rectx : 0;
 							setcolor(&pm, px, rectw, lastfg, lastbg, reverse, nobg);
 
-							XFillRectangle(dzen.dpy, pm, dzen.tgc, px,
+							XFillRectangle(nezd.dpy, pm, nezd.tgc, px,
 									set_posy ? py :
-									((int)recty < 0 ? dzen.line_height + recty : recty),
+									((int)recty < 0 ? nezd.line_height + recty : recty),
 									rectw, recth);
 
 							px += !pos_is_fixed ? rectw : 0;
@@ -575,25 +575,25 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 							get_rect_vals(tval, &rectw, &recth, &rectx, &recty);
 							if (!rectw) break;
 
-							recth = recth > dzen.line_height ? dzen.line_height-2 : recth-1;
+							recth = recth > nezd.line_height ? nezd.line_height-2 : recth-1;
 							if(set_posy)
 								py += recty;
-							recty =	recty == 0 ? (dzen.line_height - recth)/2 :
-								(dzen.line_height - recth)/2 + recty;
+							recty =	recty == 0 ? (nezd.line_height - recth)/2 :
+								(nezd.line_height - recth)/2 + recty;
 							px = (rectx == 0) ? px : rectx+px;
 							/* prevent from stairs effect when rounding recty */
-							if (!((dzen.line_height - recth) % 2)) recty--;
+							if (!((nezd.line_height - recth) % 2)) recty--;
 							setcolor(&pm, px, rectw, lastfg, lastbg, reverse, nobg);
-							XDrawRectangle(dzen.dpy, pm, dzen.tgc, px,
+							XDrawRectangle(nezd.dpy, pm, nezd.tgc, px,
 									set_posy ? py :
-									((int)recty<0 ? dzen.line_height + recty : recty), rectw-1, recth);
+									((int)recty<0 ? nezd.line_height + recty : recty), rectw-1, recth);
 							px += !pos_is_fixed ? rectw : 0;
 							break;
 
 						case circle:
 							rectx = get_circle_vals(tval, &rectw, &recth);
 							setcolor(&pm, px, rectw, lastfg, lastbg, reverse, nobg);
-							XFillArc(dzen.dpy, pm, dzen.tgc, px, set_posy ? py :(dzen.line_height - rectw)/2,
+							XFillArc(nezd.dpy, pm, nezd.tgc, px, set_posy ? py :(nezd.line_height - rectw)/2,
 									rectw, rectw, 90*64, rectx>1?recth*64:64*360);
 							px += !pos_is_fixed ? rectw : 0;
 							break;
@@ -601,7 +601,7 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 						case circleo:
 							rectx = get_circle_vals(tval, &rectw, &recth);
 							setcolor(&pm, px, rectw, lastfg, lastbg, reverse, nobg);
-							XDrawArc(dzen.dpy, pm, dzen.tgc, px, set_posy ? py : (dzen.line_height - rectw)/2,
+							XDrawArc(nezd.dpy, pm, nezd.tgc, px, set_posy ? py : (nezd.line_height - rectw)/2,
 									rectw, rectw, 90*64, rectx>1?recth*64:64*360);
 							px += !pos_is_fixed ? rectw : 0;
 							break;
@@ -624,14 +624,14 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 											px = 0;
 											break;
 										case RIGHT:
-											px = dzen.w;
+											px = nezd.w;
 											break;
 										case CENTER:
-											px = dzen.w/2;
+											px = nezd.w/2;
 											break;
 										case BOTTOM:
 											set_posy = 1;
-											py = dzen.line_height;
+											py = nezd.line_height;
 											break;
 										case TOP:
 											set_posy = 1;
@@ -647,7 +647,7 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 									py += n_posy;
 							} else {
 								set_posy = 0;
-								py = (dzen.line_height - dzen.font.height) / 2;
+								py = (nezd.line_height - nezd.font.height) / 2;
 							}
 							break;
 
@@ -666,7 +666,7 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 									py = n_posy;
 							} else {
 								set_posy = 0;
-								py = (dzen.line_height - dzen.font.height) / 2;
+								py = (nezd.line_height - nezd.font.height) / 2;
 							}
 							break;
 
@@ -675,32 +675,32 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 							break;
 
 						case bg:
-							lastbg = tval[0] ? (unsigned)getcolor(tval) : dzen.norm[ColBG];
-#ifdef DZEN_XFT
+							lastbg = tval[0] ? (unsigned)getcolor(tval) : nezd.norm[ColBG];
+#ifdef NEZD_XFT
 							if(xftcs_bg) free(xftcs_bg);
-							xftcs_bg = estrdup(tval[0] ? tval : dzen.bg);
+							xftcs_bg = estrdup(tval[0] ? tval : nezd.bg);
 #endif
 
 							break;
 
 						case fg:
-							lastfg = tval[0] ? (unsigned)getcolor(tval) : dzen.norm[ColFG];
-							XSetForeground(dzen.dpy, dzen.tgc, lastfg);
-#ifdef DZEN_XFT
+							lastfg = tval[0] ? (unsigned)getcolor(tval) : nezd.norm[ColFG];
+							XSetForeground(nezd.dpy, nezd.tgc, lastfg);
+#ifdef NEZD_XFT
 							if (xftcs) free(xftcs);
-							xftcs = estrdup(tval[0] ? tval : dzen.fg);
+							xftcs = estrdup(tval[0] ? tval : nezd.fg);
 #endif
 							break;
 
 						case fn:
 							if(tval[0]) {
-#ifndef DZEN_XFT
+#ifndef NEZD_XFT
 								if(!strncmp(tval, "dfnt", 4)) {
-									cur_fnt = &(dzen.fnpl[atoi(tval+4)]);
+									cur_fnt = &(nezd.fnpl[atoi(tval+4)]);
 
 									if(!cur_fnt->set) {
 										gcv.font = cur_fnt->xfont->fid;
-										XChangeGC(dzen.dpy, dzen.tgc, GCFont, &gcv);
+										XChangeGC(nezd.dpy, nezd.tgc, GCFont, &gcv);
 									}
 								}
 								else
@@ -708,17 +708,17 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 									setfont(tval);
 							}
 							else {
-								cur_fnt = &dzen.font;
-#ifndef DZEN_XFT		
+								cur_fnt = &nezd.font;
+#ifndef NEZD_XFT		
 								if(!cur_fnt->set){
 									gcv.font = cur_fnt->xfont->fid;
-									XChangeGC(dzen.dpy, dzen.tgc, GCFont, &gcv);
+									XChangeGC(nezd.dpy, nezd.tgc, GCFont, &gcv);
 								}
 #else
-							setfont(dzen.fnt ? dzen.fnt : FONT);
+							setfont(nezd.fnt ? nezd.fnt : FONT);
 #endif								
 							}
-							py = set_posy ? py : (dzen.line_height - cur_fnt->height) / 2;
+							py = set_posy ? py : (nezd.line_height - cur_fnt->height) / 2;
 							font_was_set = 1;
 							break;
 						case ca:
@@ -737,9 +737,9 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 									max_y = py;
 									(*area).active = 0;
 									if(lnr == -1) {
-										(*area).win = dzen.title_win.win;
+										(*area).win = nezd.title_win.win;
 									} else {
-										(*area).win = dzen.slave_win.line[lnr];
+										(*area).win = nezd.slave_win.line[lnr];
 									}
 									(*w).sens_areas_cnt++;
 								}
@@ -767,7 +767,7 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 
 				/* check if text is longer than window's width */
 				tw = textnw(cur_fnt, lbuf, strlen(lbuf));
-				while((((tw + px) > (dzen.w)) || (block_align!=-1 && tw>block_width)) && j>=0) {
+				while((((tw + px) > (nezd.w)) || (block_align!=-1 && tw>block_width)) && j>=0) {
 					lbuf[--j] = '\0';
 					tw = textnw(cur_fnt, lbuf, strlen(lbuf));
 				}
@@ -777,7 +777,7 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 				/* draw background for block */
 				if(block_align!=-1 && !nobg) {
 					setcolor(&pm, px, rectw, lastbg, lastbg, 0, nobg);
-					XFillRectangle(dzen.dpy, pm, dzen.tgc, px, 0, block_width, dzen.line_height);
+					XFillRectangle(nezd.dpy, pm, nezd.tgc, px, 0, block_width, nezd.line_height);
 				}
 
 				if(block_align==ALIGNRIGHT)
@@ -788,26 +788,26 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 				if(!nobg)
 					setcolor(&pm, px, tw, lastfg, lastbg, reverse, nobg);
 				
-#ifndef DZEN_XFT
+#ifndef NEZD_XFT
 				if(cur_fnt->set)
-					XmbDrawString(dzen.dpy, pm, cur_fnt->set,
-							dzen.tgc, px, py + cur_fnt->ascent, lbuf, strlen(lbuf));
+					XmbDrawString(nezd.dpy, pm, cur_fnt->set,
+							nezd.tgc, px, py + cur_fnt->ascent, lbuf, strlen(lbuf));
 				else
-					XDrawString(dzen.dpy, pm, dzen.tgc, px, py+dzen.font.ascent, lbuf, strlen(lbuf));
+					XDrawString(nezd.dpy, pm, nezd.tgc, px, py+nezd.font.ascent, lbuf, strlen(lbuf));
 #else
 				if(reverse) {
-				XftColorAllocName(dzen.dpy, DefaultVisual(dzen.dpy, dzen.screen),
-						DefaultColormap(dzen.dpy, dzen.screen),  xftcs_bg,  &xftc);
+				XftColorAllocName(nezd.dpy, DefaultVisual(nezd.dpy, nezd.screen),
+						DefaultColormap(nezd.dpy, nezd.screen),  xftcs_bg,  &xftc);
 				} else {
-				XftColorAllocName(dzen.dpy, DefaultVisual(dzen.dpy, dzen.screen),
-						DefaultColormap(dzen.dpy, dzen.screen),  xftcs,  &xftc);
+				XftColorAllocName(nezd.dpy, DefaultVisual(nezd.dpy, nezd.screen),
+						DefaultColormap(nezd.dpy, nezd.screen),  xftcs,  &xftc);
 				}
 
 				XftDrawStringUtf8(xftd, &xftc,
-						cur_fnt->xftfont, px, py + dzen.font.xftfont->ascent, (const FcChar8 *)lbuf, strlen(lbuf));
+						cur_fnt->xftfont, px, py + nezd.font.xftfont->ascent, (const FcChar8 *)lbuf, strlen(lbuf));
 #endif
 
-				max_y = MAX(max_y, py+dzen.font.height);
+				max_y = MAX(max_y, py+nezd.font.height);
 
 				if(block_align==-1) {
 					if(!pos_is_fixed || *linep =='\0')
@@ -841,17 +841,17 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 
 	if(!nodraw) {
 		/* expand/shrink dynamically */
-		if(dzen.title_win.expand && lnr == -1){
+		if(nezd.title_win.expand && lnr == -1){
 			i = px;
-			switch(dzen.title_win.expand) {
+			switch(nezd.title_win.expand) {
 				case left:
 					/* grow left end */
-					otx = dzen.title_win.x_right_corner - i > dzen.title_win.x ?
-						dzen.title_win.x_right_corner - i : dzen.title_win.x;
-					XMoveResizeWindow(dzen.dpy, dzen.title_win.win, otx, dzen.title_win.y, px, dzen.line_height);
+					otx = nezd.title_win.x_right_corner - i > nezd.title_win.x ?
+						nezd.title_win.x_right_corner - i : nezd.title_win.x;
+					XMoveResizeWindow(nezd.dpy, nezd.title_win.win, otx, nezd.title_win.y, px, nezd.line_height);
 					break;
 				case right:
-					XResizeWindow(dzen.dpy, dzen.title_win.win, px, dzen.line_height);
+					XResizeWindow(nezd.dpy, nezd.title_win.win, px, nezd.line_height);
 					break;
 			}
 
@@ -860,44 +860,44 @@ parse_line(const char *line, int lnr, int align, int reverse, int nodraw) {
 				xorig[LNR2WINDOW(lnr)] = 0;
 			if(align == ALIGNCENTER) {
 				xorig[LNR2WINDOW(lnr)] = (lnr != -1) ?
-					(dzen.slave_win.width - px)/2 :
-					(dzen.title_win.width - px)/2;
+					(nezd.slave_win.width - px)/2 :
+					(nezd.title_win.width - px)/2;
 			}
 			else if(align == ALIGNRIGHT) {
 				xorig[LNR2WINDOW(lnr)] = (lnr != -1) ?
-					(dzen.slave_win.width - px) :
-					(dzen.title_win.width - px);
+					(nezd.slave_win.width - px) :
+					(nezd.title_win.width - px);
 			}
 		}
 
 
 		if(lnr != -1) {
-			XCopyArea(dzen.dpy, pm, dzen.slave_win.drawable[lnr], dzen.gc,
-                    0, 0, dzen.w, dzen.line_height, xorig[LNR2WINDOW(lnr)], 0);
+			XCopyArea(nezd.dpy, pm, nezd.slave_win.drawable[lnr], nezd.gc,
+                    0, 0, nezd.w, nezd.line_height, xorig[LNR2WINDOW(lnr)], 0);
 		}
 		else {
-			XCopyArea(dzen.dpy, pm, dzen.title_win.drawable, dzen.gc,
-					0, 0, dzen.w, dzen.line_height, xorig[LNR2WINDOW(lnr)], 0);
+			XCopyArea(nezd.dpy, pm, nezd.title_win.drawable, nezd.gc,
+					0, 0, nezd.w, nezd.line_height, xorig[LNR2WINDOW(lnr)], 0);
 		}
-		XFreePixmap(dzen.dpy, pm);
+		XFreePixmap(nezd.dpy, pm);
 
 		/* reset font to default */
 		if(font_was_set)
-			setfont(dzen.fnt ? dzen.fnt : FONT);
+			setfont(nezd.fnt ? nezd.fnt : FONT);
 
-#ifdef DZEN_XPM
+#ifdef NEZD_XPM
 		if(free_xpm_attrib) {
-			XFreeColors(dzen.dpy, xpma.colormap, xpma.pixels, xpma.npixels, xpma.depth);
+			XFreeColors(nezd.dpy, xpma.colormap, xpma.pixels, xpma.npixels, xpma.depth);
 			XpmFreeAttributes(&xpma);
 		}
 #endif
 
-#ifdef DZEN_XFT
+#ifdef NEZD_XFT
 		XftDrawDestroy(xftd);
 #endif
 	}
 
-#ifdef DZEN_XFT
+#ifdef NEZD_XFT
 	if(xftcs) free(xftcs);
 	if(xftcs_bg) free(xftcs_bg);
 #endif
@@ -983,21 +983,21 @@ void
 drawheader(const char * text) {
 	if(parse_non_drawing_commands((char *)text)) {
 		if (text){
-			dzen.w = dzen.title_win.width;
-			dzen.h = dzen.line_height;
+			nezd.w = nezd.title_win.width;
+			nezd.h = nezd.line_height;
 			
 			window_sens[TOPWINDOW].sens_areas_cnt = 0;
 			
-			XFillRectangle(dzen.dpy, dzen.title_win.drawable, dzen.rgc, 0, 0, dzen.w, dzen.h);
-			parse_line(text, -1, dzen.title_win.alignment, 0, 0);
+			XFillRectangle(nezd.dpy, nezd.title_win.drawable, nezd.rgc, 0, 0, nezd.w, nezd.h);
+			parse_line(text, -1, nezd.title_win.alignment, 0, 0);
 		}
 	} else {
-		dzen.slave_win.tcnt = -1;
-		dzen.cur_line = 0;
+		nezd.slave_win.tcnt = -1;
+		nezd.cur_line = 0;
 	}
 
-	XCopyArea(dzen.dpy, dzen.title_win.drawable, dzen.title_win.win,
-			dzen.gc, 0, 0, dzen.title_win.width, dzen.line_height, 0, 0);
+	XCopyArea(nezd.dpy, nezd.title_win.drawable, nezd.title_win.win,
+			nezd.gc, 0, 0, nezd.title_win.width, nezd.line_height, 0, 0);
 }
 
 void
@@ -1006,8 +1006,8 @@ drawbody(char * text) {
 	int i, write_buffer=1;
 	
 
-	if(dzen.slave_win.tcnt == -1) {
-		dzen.slave_win.tcnt = 0;
+	if(nezd.slave_win.tcnt == -1) {
+		nezd.slave_win.tcnt = 0;
 		drawheader(text);
 		return;
 	}
@@ -1018,7 +1018,7 @@ drawbody(char * text) {
 		return;
 	}
 
-	if(dzen.slave_win.tcnt == dzen.slave_win.tsize)
+	if(nezd.slave_win.tcnt == nezd.slave_win.tsize)
 		free_buffer();
 
 	write_buffer = parse_non_drawing_commands(text);
@@ -1027,14 +1027,14 @@ drawbody(char * text) {
 	if(text[0] == '^' && text[1] == 'c' && text[2] == 's') {
 		free_buffer();
 
-		for(i=0; i < dzen.slave_win.max_lines; i++)
-			XFillRectangle(dzen.dpy, dzen.slave_win.drawable[i], dzen.rgc, 0, 0, dzen.slave_win.width, dzen.line_height);
+		for(i=0; i < nezd.slave_win.max_lines; i++)
+			XFillRectangle(nezd.dpy, nezd.slave_win.drawable[i], nezd.rgc, 0, 0, nezd.slave_win.width, nezd.line_height);
 		x_draw_body();
 		return;
 	}
 
-	if( write_buffer && (dzen.slave_win.tcnt < dzen.slave_win.tsize) ) {
-		dzen.slave_win.tbuf[dzen.slave_win.tcnt] = estrdup(text);
-		dzen.slave_win.tcnt++;
+	if( write_buffer && (nezd.slave_win.tcnt < nezd.slave_win.tsize) ) {
+		nezd.slave_win.tbuf[nezd.slave_win.tcnt] = estrdup(text);
+		nezd.slave_win.tcnt++;
 	}
 }
