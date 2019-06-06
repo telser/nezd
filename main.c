@@ -1105,14 +1105,14 @@ main(int argc, char *argv[]) {
 			printf("dzen-"VERSION", (C)opyright 2007-2009 Robert Manea\n");
 			printf(
 			"Enabled optional features: "
-#ifdef DZEN_XMP
-			" XPM "
+#ifdef DZEN_XPM
+			"XPM "
 #endif
 #ifdef DZEN_XFT
-			" XFT"
+			"XFT "
 #endif
 #ifdef DZEN_XINERAMA
-			" XINERAMA "
+			"XINERAMA "
 #endif
 			"\n"
 			);
