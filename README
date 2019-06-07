@@ -1,6 +1,9 @@
-====================================
- nezd, (c) 2007-2010 by Robert Manea
-====================================
+Nezd is a fork of dzen that aims to add polish and features.
+
+Changes from dzen currently include merging in existing patches adding:
+        1. Support for relative positioning
+        2. Manual pages
+        3. Bug and documentation fixes
 
 Nezd is a general purpose messaging, notification and menuing program for X11.
 It was designed to be fast, tiny and scriptable in any language.
@@ -43,28 +46,21 @@ Optionally if you want to use nezd's gadgets:
 Note:       By default nezd will not be compiled with Xinerama and XPM support.
             Uncomment the respective lines in config.mk to change this.
 
-
-Contact:
---------
-Feature requests, patches or anything else related to nezd can be send
-to: rob dot manea at gmail dot com
-
-
 Running nezd
 ------------
 nezd accepts a couple of options:
 
     -fg     foreground color
     -bg     background color
-    -fn     font 
-    -ta     alignment of title window content 
+    -fn     font
+    -ta     alignment of title window content
             l(eft), c(center), r(ight)
     -tw     title window width (can be relative with %)
     -sa     alignment of slave window, see "-ta"
     -l      lines, see (1)
     -e      events and actions, see (2)
     -m      menu mode, see (3)
-    -u      update contents of title and 
+    -u      update contents of title and
             slave window simultaneously, see (4)
     -p      persist EOF (optional timeout in seconds)
     -x      x position (can be relative with %)
@@ -109,7 +105,7 @@ Nezd's window layout is as follows:
     |                                          |
     `------------------------------------------´
 
-The first line you provide to nezd always goes to the title window, 
+The first line you provide to nezd always goes to the title window,
 all other consecutive lines will be drawn to the slave window unless
 you explicitly override this with the (5) In-text formating language
 command ^tw().
@@ -134,27 +130,27 @@ A2:  With the default event/action handling the slave window will
 
 Q3:  If I echo some text or cat a file nezd closes itself immediately.
 
-A3:  There are 2 different approaches nezd uses to terminate itself, 
+A3:  There are 2 different approaches nezd uses to terminate itself,
      see next section "Termination".
 
 
 Q4:  Ok, the title and slave thing works, can I update the
      contents of both windows at the same time?
 
-A4:  Sure, see "(4) Simultaneous updates" or use the in-text 
+A4:  Sure, see "(4) Simultaneous updates" or use the in-text
      command "^tw()" to explicitly draw to the title window.
      See section (5) for further details
 
 
 Q5:  Can I change color of my input at runtime?
 
-A5:  Yes, you can change both background and foreground colors and 
+A5:  Yes, you can change both background and foreground colors and
      much more See "(5) In-Text formating language"
 
 
 Q6:  Can I use nezd as a menu?
 
-A6:  Yes, both vertical and horizontal menus are supported. 
+A6:  Yes, both vertical and horizontal menus are supported.
      See "(3) Menu" for further details.
 
 
@@ -218,7 +214,7 @@ An example:
 
     button1=exec:xterm:firefox;
     on Button1 event (Button1 press on the mouse) execute xterm and
-    firefox. 
+    firefox.
     Note: xterm and firefox are options to the exec action
 
     entertitle=uncollapse,unhide;
@@ -235,7 +231,7 @@ Supported events:
     onstart             Perform actions right after startup
     onexit              Perform actions just before exiting
     onnewinput          Perform actions if there is new input for the slave window
-    button1             Mouse button1 released 
+    button1             Mouse button1 released
     button2             Mouse button2 released
     button3             Mouse button3 released
     button4             Mouse button4 released (usually scrollwheel)
@@ -246,7 +242,7 @@ Supported events:
     leavetitle          Mouse leaves the title window
     enterslave          Mouse enters the slave window
     leaveslave          Mouse leaves the slave window
-    sigusr1             SIGUSR1 received 
+    sigusr1             SIGUSR1 received
     sigusr2             SIGUSR2 received
     key_KEYNAME         Keyboard events (*)
 
@@ -256,7 +252,7 @@ Supported events:
 
     Every key can be bound to an action (see below). The format is:
     key_KEYNAME where KEYNAME is the name of the key as defined in
-    keysymdef.h (usually: /usr/include/X11/keysymdef.h).  The part 
+    keysymdef.h (usually: /usr/include/X11/keysymdef.h).  The part
     after 'XK_' in keysymdef.h must be used for KEYNAME.
 
 
@@ -286,7 +282,7 @@ Supported actions:
     scrolldown:n        scroll slave window n lines down (default n=1)
     grabkeys            enable keyboard support
     ungrabkeys          disable keyboard support
-    grabmouse           enable mouse support 
+    grabmouse           enable mouse support
                         only needed with specific windowmanagers, such as fluxbox
     ungrabmouse         release mouse
                         only needed with specific windowmanagers, such as fluxbox
@@ -330,7 +326,7 @@ Note:   If no events/actions are specified nezd defaults to:
 ---------------------
 
 Nezd provides two menu modes, vertical and horizontal menus. You can
-access these modes by adding 'v'(ertical) or 'h'(horizontal) to the 
+access these modes by adding 'v'(ertical) or 'h'(horizontal) to the
 '-m' option. If nothing is specified nezd defaults to vertical menus.
 
 Vertical menu, both invocations are equivalent:
@@ -405,7 +401,7 @@ Graphics:
     ^i(path)           draw icon specified by path
                        Supported formats: XBM and optionally XPM
 
-    ^r(WIDTHxHEIGHT)   draw a rectangle with the dimensions 
+    ^r(WIDTHxHEIGHT)   draw a rectangle with the dimensions
                        WIDTH and HEIGHT
     ^ro(WIDTHxHEIGHT)  rectangle outline
 
@@ -424,37 +420,37 @@ Positioning:
 
      ARGUMENT:
 
-     ^p(+-X)          move X pixels to the right or left of the current position (on the X axis) 
+     ^p(+-X)          move X pixels to the right or left of the current position (on the X axis)
 
-     ^p(+-X;+-Y)      move X pixels to the right or left and Y pixels up or down of the current 
-                      position (on the X and Y axis) 
+     ^p(+-X;+-Y)      move X pixels to the right or left and Y pixels up or down of the current
+                      position (on the X and Y axis)
 
      ^p(;+-Y)         move Y pixels up or down of the current position (on the Y axis)
 
-     ^p()             without parameters resets the Y position to its default 
+     ^p()             without parameters resets the Y position to its default
 
      ^pa()            takes the same parameters as described above but positions at
-                      the absolute X and Y coordinates 
+                      the absolute X and Y coordinates
 
      Further ^p() also takes some symbolic names as argument:
 
      _LOCK_X          Lock the current X position, useful if you want to
                       align things vertically
-     _UNLOCK_X        Unlock the X position 
-     _LEFT            Move current x-position to the left edge 
-     _RIGHT           Move current x-position to the right edge 
-     _TOP             Move current y-position to the top edge 
-     _CENTER          Move current x-position to center of the window 
-     _BOTTOM          Move current y-position to the bottom edge 
+     _UNLOCK_X        Unlock the X position
+     _LEFT            Move current x-position to the left edge
+     _RIGHT           Move current x-position to the right edge
+     _TOP             Move current y-position to the top edge
+     _CENTER          Move current x-position to center of the window
+     _BOTTOM          Move current y-position to the bottom edge
 
 Interaction:
 ------------
 
-    ^ca(BTN, CMD) ... ^ca()      
+    ^ca(BTN, CMD) ... ^ca()
 
                        Used to define 'clickable areas' anywhere inside the
-                       title window or slave window. 
-                       - 'BTN' denotes the mouse button (1=left, 2=right, 3=middle, etc.) 
+                       title window or slave window.
+                       - 'BTN' denotes the mouse button (1=left, 2=right, 3=middle, etc.)
                        - 'CMD' denotes the command that should be spawned when the specific
                          area has been clicked with the defined button
                        - '...' denotes any text or formating commands nezd accepts
@@ -462,7 +458,7 @@ Interaction:
 
                        Example:
                          foo ^ca(1, echo one)^fg(red)click me and i'll echo one^fg()^ca() bar
-                        
+
 Actions as commands:
 --------------------
 
@@ -470,7 +466,7 @@ Actions as commands:
     ^collapse()
     ^uncollapse()
     ^togglestick()
-    ^stick()            See section (2) 'Events and actions' for a detailed description 
+    ^stick()            See section (2) 'Events and actions' for a detailed description
     ^unstick()          of each command.
     ^togglehide()
     ^hide()
@@ -479,15 +475,15 @@ Actions as commands:
     ^lower()
     ^scrollhome()
     ^scrollend()
-    ^exit()  
+    ^exit()
 
 Other:
 ------
 
     ^tw()              draw to title window
-                       This command has some annoyances, as only 
+                       This command has some annoyances, as only
                        the input after the command will be drawn
-                       to the title window, so it is best used 
+                       to the title window, so it is best used
                        only once and as first command per line.
 
     ^cs()              clear slave window
@@ -498,16 +494,16 @@ Other:
                        1 to ignore or 0 to not ignore the bg color set
                        with ^bg(color).
                        This command is useful in combination with ^p()
-                       and ^pa() in order to position the input inside 
+                       and ^pa() in order to position the input inside
                        other already drawn input.
 
-                       Example: 
+                       Example:
                          ^ib(1)^fg(red)^ro(100x15)^p(-98)^fg(blue)^r(20x10)^fg(orange)^p(3)^r(40x10)^p(4)^fg(darkgreen)^co(12)^p(2)^c(10)
 
 
 
 These commands can appear anywhere and in any combination in nezd's
-input. 
+input.
 
 The color can be specified either as symbolic name (e.g. red,
 darkgreen, etc.) or as #rrggbb hex-value (e.g. #ffffaa).
@@ -520,7 +516,7 @@ you can easily draw your own icons.
 
 Some examples:
 
-   Input:  
+   Input:
           ^fg(red)I'm red text ^fg(blue)I am blue
 
 
@@ -550,7 +546,7 @@ Examples:
 ---------
 
 * Display message and timeout after 10 seconds:
-    (echo "This is a message"; sleep 10) | nezd -bg darkred -fg grey80 -fn fixed 
+    (echo "This is a message"; sleep 10) | nezd -bg darkred -fg grey80 -fn fixed
 
 
 * Display message and never timeout:
