@@ -3,14 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
 #define MAX_GRAPH_VALS 1024
 
 typedef struct {
   const char *bg;
-  const char *fg; 
+  const char *fg;
   const char *label;
   char sym;
   double val;
@@ -28,9 +28,9 @@ typedef struct {
   int gc;
   char gb[MAX_GRAPH_VALS];
   int pnl;
-} Dbar; 
+} Dbar;
 
-enum mode  { textual, graphical };
+enum mode { textual, graphical };
 enum style { norm, outlined, vertical, graph, pie };
 
 void fdbar(Dbar *dbar, FILE *stream);

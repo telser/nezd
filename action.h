@@ -1,4 +1,4 @@
-/*  
+/*
  * (C)opyright 2007-2009 Robert Manea <rob dot manea at gmail dot com>
  * See LICENSE file for license details.
  *
@@ -13,41 +13,52 @@ typedef struct _ev_list ev_list;
 typedef int handlerf(char **);
 
 enum ev_id {
-	/* startup, exit, input */
-	onstart, onexit, onnewinput,
-	/* mouse buttons */
-	button1, button2, button3, button4, button5,  button6,  button7,
-	/* entering/leaving windows */
-	entertitle, leavetitle, enterslave, leaveslave, 
-	/* external signals */
-	sigusr1, sigusr2,
-	/* key event marker 
-	 * must always be the last entry
-	 */
-	keymarker
+  /* startup, exit, input */
+  onstart,
+  onexit,
+  onnewinput,
+  /* mouse buttons */
+  button1,
+  button2,
+  button3,
+  button4,
+  button5,
+  button6,
+  button7,
+  /* entering/leaving windows */
+  entertitle,
+  leavetitle,
+  enterslave,
+  leaveslave,
+  /* external signals */
+  sigusr1,
+  sigusr2,
+  /* key event marker
+   * must always be the last entry
+   */
+  keymarker
 };
 
 struct _ev_list {
-	long id;
-	As *action[MAXACTIONS];
-	ev_list *next;
+  long id;
+  As *action[MAXACTIONS];
+  ev_list *next;
 };
 
 struct event_lookup {
-	const char *name;
-	long id;
+  const char *name;
+  long id;
 };
 
 struct action_lookup {
-	const char *name;
-	int (*handler)(char **);
+  const char *name;
+  int (*handler)(char **);
 };
 
 struct AS {
-	char *options[MAXOPTIONS];
-	int (*handler)(char **);
+  char *options[MAXOPTIONS];
+  int (*handler)(char **);
 };
-
 
 /* utility functions */
 void do_action(long);
@@ -83,4 +94,3 @@ int a_grabkeys(char **);
 int a_ungrabkeys(char **);
 int a_grabmouse(char **);
 int a_ungrabmouse(char **);
-
