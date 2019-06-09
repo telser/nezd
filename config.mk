@@ -55,8 +55,7 @@ INCS = -I. -I${X11INC}
 
 ## Option 8: With Xinerama and XPM and XFT
 LIBS = -L${X11LIB} -lX11 -lXinerama -lXpm `pkg-config --libs xft`
-CFLAGS += -Wall -Werror -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XPM -DNEZD_XFT `pkg-config --cflags xft`
-
+CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XPM -DNEZD_XFT `pkg-config --cflags xft`
 
 
 # END of feature configuration
