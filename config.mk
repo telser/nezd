@@ -11,20 +11,8 @@ X11INC = /usr/X11R6/include
 X11LIB = /usr/X11R6/lib
 INCS = -I. -I${X11INC}
 
-# Configure the features you want to be supported
-# Only one of the following options has to be uncommented,
-# all others must be commented!
-#
-# Uncomment: Remove # from the beginning of respective lines
-# Comment  : Add # to the beginning of the respective lines
-
-## Option 1: No Xinerama
-#LIBS = -L${X11LIB} -lX11
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\"
-
-## Option 2: With Xinerama
 LIBS = -L${X11LIB} -lX11 -lXinerama -lXpm `pkg-config --libs xft`
-CFLAGS += -Wall -Wextra -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA `pkg-config --cflags xft`
+CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" `pkg-config --cflags xft`
 
 # END of feature configuration
 

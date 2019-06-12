@@ -273,7 +273,6 @@ static void qsi_no_xinerama(Display *dpy, XRectangle *rect) {
   rect->height = DisplayHeight(dpy, DefaultScreen(dpy));
 }
 
-#ifdef NEZD_XINERAMA
 static void queryscreeninfo(Display *dpy, XRectangle *rect, int screen) {
   XineramaScreenInfo *xsi = NULL;
   int nscreens = 1;
@@ -290,7 +289,6 @@ static void queryscreeninfo(Display *dpy, XRectangle *rect, int screen) {
     rect->height = xsi[screen - 1].height;
   }
 }
-#endif
 
 static void set_docking_ewmh_info(Display *dpy, Window w, int dock) {
   unsigned long strut[12] = {0};
@@ -301,10 +299,8 @@ static void set_docking_ewmh_info(Display *dpy, Window w, int dock) {
   char *host_name;
   XTextProperty txt_prop;
   XRectangle si;
-#ifdef NEZD_XINERAMA
   XineramaScreenInfo *xsi;
   int screen_count, i, max_height;
-#endif
 
   host_name = emalloc(HOST_NAME_MAX);
   if ((gethostname(host_name, HOST_NAME_MAX) > -1) && (cur_pid = getpid())) {
@@ -320,18 +316,13 @@ static void set_docking_ewmh_info(Display *dpy, Window w, int dock) {
   free(host_name);
 
   XGetWindowAttributes(dpy, w, &wa);
-#ifdef NEZD_XINERAMA
   queryscreeninfo(dpy, &si, nezd.xinescreen);
-#else
-  qsi_no_xinerama(dpy, &si);
-#endif
   if (wa.y - si.y == 0) {
     strut[2] = si.y + wa.height;
     strut[8] = wa.x;
     strut[9] = wa.x + wa.width - 1;
 
   } else if ((wa.y - si.y + wa.height) == si.height) {
-#ifdef NEZD_XINERAMA
     max_height = si.height;
     xsi = XineramaQueryScreens(dpy, &screen_count);
     for (i = 0; i < screen_count; i++) {
@@ -341,9 +332,6 @@ static void set_docking_ewmh_info(Display *dpy, Window w, int dock) {
     XFree(xsi);
     /* Adjust strut value if there is a larger screen */
     strut[3] = max_height - (si.height + si.y) + wa.height;
-#else
-    strut[3] = wa.height;
-#endif
     strut[10] = wa.x;
     strut[11] = wa.x + wa.width - 1;
   }
@@ -457,11 +445,7 @@ static void x_create_windows(Geometry *geometry, int use_ewmh_dock) {
                   ButtonMotionMask | EnterWindowMask | LeaveWindowMask |
                   KeyPressMask;
 
-#ifdef NEZD_XINERAMA
   queryscreeninfo(nezd.dpy, &si, nezd.xinescreen);
-#else
-  qsi_no_xinerama(nezd.dpy, &si);
-#endif
   x_check_geometry(geometry, si);
 
   /* title window */
@@ -998,22 +982,13 @@ int main(int argc, char *argv[]) {
       if (++i < argc) {
         fnpre = estrdup(argv[i]);
       }
-    }
-#ifdef NEZD_XINERAMA
-    else if (!strncmp(argv[i], "-xs", 4)) {
+    } else if (!strncmp(argv[i], "-xs", 4)) {
       if (++i < argc)
         nezd.xinescreen = atoi(argv[i]);
-    }
-#endif
-    else if (!strncmp(argv[i], "-dock", 6))
+    } else if (!strncmp(argv[i], "-dock", 6))
       use_ewmh_dock = 1;
     else if (!strncmp(argv[i], "-v", 3)) {
       printf("nezd-" VERSION);
-      printf("Enabled optional features: "
-#ifdef NEZD_XINERAMA
-             "XINERAMA "
-#endif
-             "\n");
       return EXIT_SUCCESS;
     } else
       eprint("usage: nezd [-v] [-p [seconds]] [-m [v|h]] [-ta <l|c|r>] [-sa "
@@ -1026,10 +1001,7 @@ int main(int argc, char *argv[]) {
              "             [-geometry <geometry string>] [-expand "
              "<left|right>] [-dock]\n"
              "             [-title-name <string>] [-slave-name <string>]\n"
-#ifdef NEZD_XINERAMA
-             "             [-xs <screen>]\n"
-#endif
-      );
+             "             [-xs <screen>]\n");
 
   if (nezd.tsupdate && !nezd.slave_win.max_lines)
     nezd.tsupdate = False;

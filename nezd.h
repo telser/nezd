@@ -4,13 +4,11 @@
  *
  */
 
+#include <X11/Xft/Xft.h>
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 #include <X11/Xutil.h>
-#ifdef NEZD_XINERAMA
 #include <X11/extensions/Xinerama.h>
-#endif
-#include <X11/Xft/Xft.h>
 
 #define FONT "-*-fixed-*-*-*-*-*-*-*-*-*-*-*-*"
 #define BGCOLOR "#111111"
@@ -166,7 +164,6 @@ struct NEZD {
   long cur_line;
   int ret_val;
 
-  /* should always be 0 if NEZD_XINERAMA not defined */
   int xinescreen;
 };
 

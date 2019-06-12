@@ -8,7 +8,7 @@ Changes from dzen
   * Manual page
   * Bug and documentation fixes
 
--
+- Xft, Xinerama, and Xpm are now required
 
 Nezd is a general purpose messaging, notification and menuing program for X11.
 It was designed to be fast, tiny and scriptable in any language.
@@ -23,13 +23,11 @@ Features
     * Versatile - display all sorts of information
     * Interactive - user defined mouse and keyboard actions
     * XFT support
-    * Optional XINERAMA support
-
+    * XINERAMA support
 
 Requirements
 ------------
-In order to build nezd you need the Xlib, XPM and Xft header files.
-
+In order to build nezd you need the Xlib, Xinerama, XPM and Xft header files.
 
 Installation
 ------------
@@ -41,15 +39,10 @@ necessary as root):
 
     make clean install
 
-
 Optionally if you want to use nezd's gadgets:
 
     cd gadgets
     make clean install
-
-
-Note:       By default nezd will not be compiled with Xinerama and support.
-            Uncomment the respective lines in config.mk to change this.
 
 Running nezd
 ------------
@@ -77,8 +70,6 @@ nezd accepts a couple of options:
 
     see (5) for the in-text formating language.
 
-
-
 X resources
 -----------
 
@@ -88,7 +79,6 @@ As an example you can add following lines to ~/.Xresources
 nezd.font:       -*-fixed-*-*-*-*-*-*-*-*-*-*-*-*
 nezd.foreground: #22EE11
 nezd.background: black
-
 
 
 Window layout
@@ -158,9 +148,6 @@ Q6:  Can I use nezd as a menu?
 A6:  Yes, both vertical and horizontal menus are supported.
      See "(3) Menu" for further details.
 
-
-
-
 Termination:
 ------------
 nezd uses two different approaches to terminate itself:
@@ -174,14 +161,11 @@ nezd uses two different approaches to terminate itself:
         - this is the default behaviour, see (2)
         - in some modes the Escape key terminates too, see (2)
 
-
-
 Return values:
 --------------
 0               -   nezd received EOF
 1               -   some error occurred, inspect the error message
 user defined    -   set with 'exit:retval' action, see (2)
-
 
 
 (1) Option "-l": Slave window
@@ -198,7 +182,6 @@ sticky by clicking with Button2 into it (default action).
 
 Button4 and Button5 (mouse wheel) will scroll the slave window up
 and down if the content exceeds the window height (default action).
-
 
 
 (2) Option '-e': Events and actions
@@ -260,8 +243,6 @@ Supported events:
     keysymdef.h (usually: /usr/include/X11/keysymdef.h).  The part
     after 'XK_' in keysymdef.h must be used for KEYNAME.
 
-
-
 Supported actions:
 ------------------
 
@@ -292,14 +273,12 @@ Supported actions:
     ungrabmouse         release mouse
                         only needed with specific windowmanagers, such as fluxbox
 
-
 Note:   If no events/actions are specified nezd defaults to:
 
         Title only mode:
         ----------------
 
         -e 'button3=exit:13'
-
 
         Multiple lines and vertical menu mode:
         --------------------------------------
@@ -310,7 +289,6 @@ Note:   If no events/actions are specified nezd defaults to:
             button4=scrollup;button5=scrolldown;
             key_Escape=ungrabkeys,exit'
 
-
         Horizontal menu mode:
         ---------------------
 
@@ -320,12 +298,9 @@ Note:   If no events/actions are specified nezd defaults to:
             button1=menuexec;button3=exit:13
             key_Escape=ungrabkeys,exit'
 
-
         If you define any events/actions, there is no default behaviour,
         i.e. you will have to specify _all_ events/actions you want to
         use.
-
-
 
 (3) Option '-m', Menu
 ---------------------
@@ -349,8 +324,6 @@ Note:   Menu mode only makes sense if '-l <n>' is specified!
         Horizontal menus have no title window, so all actions
         affecting the title window will be silently discarded
         in this mode.
-
-
 
 (4) Option '-u', Simultaneous updates
 -------------------------------------
@@ -378,8 +351,6 @@ The way it works is best described by an example:
 For this to work correctly it is essential to provide exactly the number
 of lines to the slave window as defined by the parameter to '-l'.
 
-
-
 (5) In-text formating & control language:
 -----------------------------------------
 
@@ -390,7 +361,6 @@ Currently the following commands are supported:
 
 
 Note:  Doubling the '^' character ('^^') will remove the special meaning from it.
-
 
 Colors:
 -------
@@ -506,7 +476,6 @@ Other:
                          ^ib(1)^fg(red)^ro(100x15)^p(-98)^fg(blue)^r(20x10)^fg(orange)^p(3)^r(40x10)^p(4)^fg(darkgreen)^co(12)^p(2)^c(10)
 
 
-
 These commands can appear anywhere and in any combination in nezd's
 input.
 
@@ -517,35 +486,25 @@ Icons must be in the XBM or XPM format, see the "bitmaps"
 directory for some sample icons. With the standard "bitmap" application
 you can easily draw your own icons.
 
-
-
 Some examples:
 
    Input:
           ^fg(red)I'm red text ^fg(blue)I am blue
 
-
    Input:
           ^bg(#ffaaaa)The ^fg(yellow)text to ^bg(blue)^fg(orange)colorize
-
 
    Input:
           ^fg(grey70)Some text containing ^^ characters
 
-
    Input for icons:
           ^i(bitmaps/envelope.xbm) I am an envelope ^fg(yellow)and ^i(bitmaps/battery.xbm) I'm a battery.
-
 
    Input for rectangles:
           6x4 rectangle ^r(6x4) ^fg(red)12x8 ^r(12x8) ^fg(yellow)and finally 100x15 ^r(100x15)
 
-
    Input for relative positioning:
           Some text^p(100)^fg(yellow)100 pixels to the right^p(50)^fg(red)50 more pixels to the right
-
-
-
 
 Examples:
 ---------
@@ -553,14 +512,11 @@ Examples:
 * Display message and timeout after 10 seconds:
     (echo "This is a message"; sleep 10) | nezd -bg darkred -fg grey80 -fn fixed
 
-
 * Display message and never timeout:
     echo "This is a message"| nezd -p
 
-
 * Display updating single line message:
     for i in $(seq 1 20); do A=${A}'='; print $A; sleep 1; done | nezd
-
 
 * Display header and a message with multiple lines:
     (echo Header; cal; sleep 20) | nezd -l 8
@@ -568,28 +524,22 @@ Examples:
     Displays "Header" in the title window and the output of cal in the 8
     lines high slave window.
 
-
 * Display updating messages:
     (echo Header; while true; do echo test$((i++)); sleep 1; done) | nezd -l 12
 
     The slave window will update contents if new input has arrived.
 
-
 * Display log files:
     (su -c "echo LOGFILENAME; tail -f /var/log/messages") | nezd -l 20 -x 100 -y 300 -w 500
-
 
 * Monthly schedule with remind:
     (echo Monthly Schedule; remind -c1 -m) | nezd -l 52 -w 410 -p -fn lime -bg '#e0e8ea' -fg black -x 635
 
-
 * Simple menu:
     echo "Applications" | nezd -l 4 -p -m < menufile
 
-
 * Horizontal menu without any files:
     {echo Menu; echo -e "xterm\nxclock\nxeyes\nxfontsel"} | nezd -l 4 -m h -p
-
 
 * Extract PIDs from the process table:
 
@@ -597,13 +547,9 @@ Examples:
     -e 'button1=menuprint;button3=exit;button4=scrollup:3;button5=scrolldown:3;entertitle=uncollapse;leaveslave=collapse' \
             | awk '{print $1}'
 
-
 * Nezd as xmonad (see http://xmonad.org) statusbar:
 
     status.sh | nezd -ta r -fn '-*-profont-*-*-*-*-11-*-*-*-*-*-iso8859' -bg '#aecf96' -fg black \
         -p -e 'sigusr1=raise;sigusr2=lower;onquit=exec:rm /tmp/nezd-pid;button3=exit' & echo $! > /tmp/nezd-pid
-
-
-
 
 Have fun.
