@@ -11,9 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef NEZD_XPM
 #include <X11/xpm.h>
-#endif
 
 #define ARGLEN 256
 #define MAX_ICON_CACHE 32
@@ -324,7 +322,6 @@ static int search_icon_cache(const char *name) {
   return -1;
 }
 
-#ifdef NEZD_XPM
 static void cache_icon(const char *name, Pixmap pm, int w, int h) {
   if (icon_cnt >= MAX_ICON_CACHE)
     icon_cnt = 0;
@@ -338,7 +335,6 @@ static void cache_icon(const char *name, Pixmap pm, int w, int h) {
   icons[icon_cnt].p = pm;
   icon_cnt++;
 }
-#endif
 
 char *parse_line(const char *line, int lnr, int align, int reverse,
                  int nodraw) {
@@ -377,12 +373,10 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
   XGCValues gcv;
 #endif
   Drawable pm = 0, bm;
-#ifdef NEZD_XPM
   int free_xpm_attrib = 0;
   Pixmap xpm_pm;
   XpmAttributes xpma;
   XpmColorSymbol xpms;
-#endif
 
   /* icon cache */
   int ip;
@@ -433,17 +427,13 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
 
     if (!reverse) {
       XSetForeground(nezd.dpy, nezd.tgc, nezd.norm[ColBG]);
-#ifdef NEZD_XPM
       xpms.pixel = nezd.norm[ColBG];
-#endif
 #ifdef NEZD_XFT
       xftcs_bg = estrdup(nezd.bg);
 #endif
     } else {
       XSetForeground(nezd.dpy, nezd.tgc, nezd.norm[ColFG]);
-#ifdef NEZD_XPM
       xpms.pixel = nezd.norm[ColFG];
-#endif
     }
     XFillRectangle(nezd.dpy, pm, nezd.tgc, 0, 0, nezd.w, nezd.h);
 
@@ -453,7 +443,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
       XSetForeground(nezd.dpy, nezd.tgc, nezd.norm[ColBG]);
     }
 
-#ifdef NEZD_XPM
     xpms.name = NULL;
     xpms.value = (char *)"none";
 
@@ -463,7 +452,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
     xpma.colorsymbols = &xpms;
     xpma.numsymbols = 1;
     xpma.valuemask = XpmColormap | XpmDepth | XpmVisual | XpmColorSymbols;
-#endif
 
 #ifndef NEZD_XFT
     if (!nezd.font.set) {
@@ -526,7 +514,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
                 px += !pos_is_fixed ? bm_w : 0;
                 max_y = MAX(max_y, y + bm_h);
               }
-#ifdef NEZD_XPM
               else if (XpmReadFileToPixmap(nezd.dpy, nezd.title_win.win, tval,
                                            &xpm_pm, NULL,
                                            &xpma) == XpmSuccess) {
@@ -550,7 +537,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
                 // XFreePixmap(nezd.dpy, xpm_pm);
                 free_xpm_attrib = 1;
               }
-#endif
             }
             break;
 
@@ -895,13 +881,11 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
     if (font_was_set)
       setfont(nezd.fnt ? nezd.fnt : FONT);
 
-#ifdef NEZD_XPM
     if (free_xpm_attrib) {
       XFreeColors(nezd.dpy, xpma.colormap, xpma.pixels, xpma.npixels,
                   xpma.depth);
       XpmFreeAttributes(&xpma);
     }
-#endif
 
 #ifdef NEZD_XFT
     XftDrawDestroy(xftd);

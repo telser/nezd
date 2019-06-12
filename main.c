@@ -1011,11 +1011,8 @@ int main(int argc, char *argv[]) {
     else if (!strncmp(argv[i], "-dock", 6))
       use_ewmh_dock = 1;
     else if (!strncmp(argv[i], "-v", 3)) {
-      printf("nezd-" VERSION ", (C)opyright 2007-2009 Robert Manea\n");
+      printf("nezd-" VERSION);
       printf("Enabled optional features: "
-#ifdef NEZD_XPM
-             "XPM "
-#endif
 #ifdef NEZD_XFT
              "XFT "
 #endif

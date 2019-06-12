@@ -5,7 +5,7 @@
 A general purpose messaging, notification and menu program
 
 
-The "gadgets" subdirectory contains some tools that you can 
+The "gadgets" subdirectory contains some tools that you can
 use in combination with nezd.
 
 Script archive with a collection of interesting ideas:
@@ -59,7 +59,7 @@ Optionally if you want to use nezd's gadgets:
     ^fg(grey85)make clean install
 
 
-^fg(Khaki)Note:       By default nezd will ^fg(red)not^fg(Khaki) be compiled with Xinerama and XPM support.
+^fg(Khaki)Note:       By default nezd will ^fg(red)not^fg(Khaki) be compiled with Xinerama support.
             ^fg(Khaki)Uncomment the respective lines in config.mk to change this.
 
 
@@ -75,15 +75,15 @@ nezd accepts a couple of options:
 
     -fg     foreground color
     -bg     background color
-    -fn     font 
-    -ta     alignment of title window content 
+    -fn     font
+    -ta     alignment of title window content
             l(eft), c(center), r(ight)
     -tw     title window width (can be relative with %)
     -sa     alignment of slave window, see "-ta"
     -l      lines,  ^fg(#6fbf47)see (1)
     -e      events and actions, ^fg(#6fbf47)see (2)
     -m      menu mode, ^fg(#6fbf47)see (3)
-    -u      update contents of title and 
+    -u      update contents of title and
             slave window simultaneously, ^fg(#6fbf47)see (4)
     -p      persist EOF (optional timeout in seconds)
     -x      x position (can be relative with %)
@@ -128,7 +128,7 @@ Nezd's window layout is as follows:
 ^fg(#6fbf47)    |                                          |
 ^fg(#6fbf47)    `------------------------------------------´
 
-The first line you provide to nezd always goes to the title window, 
+The first line you provide to nezd always goes to the title window,
 all other consecutive lines will be drawn to the slave window unless
 you explicitly override this with the ^fg(#6fbf47)(5) In-text formating language
 ^fg()command ^^tw().
@@ -153,26 +153,26 @@ A2:  With the default event/action handling the slave window will
 
 Q3:  If I echo some text or cat a file nezd closes itself immediately.
 
-A3:  There are 2 different approaches nezd uses to terminate itself, 
+A3:  There are 2 different approaches nezd uses to terminate itself,
      see next section ^fg(#6fbf47)Termination^fg().
 
 
 Q4:  Ok, the title and slave thing works, can I update the
      contents of both windows at the same time?
 
-A4:  Sure, see ^fg(#6fbf47)(4) Simultaneous updates ^fg()or use the in-text 
+A4:  Sure, see ^fg(#6fbf47)(4) Simultaneous updates ^fg()or use the in-text
      command ^^tw() to explicitly draw to the title window.
      See ^fg(#6fbf47)(5) In-Text formating language ^fg()for further details
 
 Q5:  Can I change color of my input at runtime?
 
-A5:  Yes, you can change both background and foreground colors and 
+A5:  Yes, you can change both background and foreground colors and
      much more See ^fg(#6fbf47)(5) In-Text formating language^fg().
 
 
 Q6:  Can I use nezd as a menu?
 
-A6:  Yes, both vertical and horizontal menus are supported. 
+A6:  Yes, both vertical and horizontal menus are supported.
      See ^fg(#6fbf47)(3) Menu ^fg()for further details.
 
 
@@ -236,7 +236,7 @@ An example:
 
     ^fg(grey70)button1=exec:xterm:firefox;
     on Button1 event (Button1 press on the mouse) execute xterm and
-    firefox. 
+    firefox.
     ^fg(Khaki)Note: xterm and firefox are options to the exec action
 
     ^fg(grey70)entertitle=uncollapse,unhide;
@@ -253,7 +253,7 @@ An example:
     onstart             Perform actions right after startup
     onexit              Perform actions just before exiting
     onnewinput          Perform actions if there is new input for the slave window
-    button1             Mouse button1 released 
+    button1             Mouse button1 released
     button2             Mouse button2 released
     button3             Mouse button3 released
     button4             Mouse button4 released (usually scrollwheel)
@@ -264,7 +264,7 @@ An example:
     leavetitle          Mouse leaves the title window
     enterslave          Mouse enters the slave window
     leaveslave          Mouse leaves the slave window
-    sigusr1             SIGUSR1 received 
+    sigusr1             SIGUSR1 received
     sigusr2             SIGUSR2 received
     key_KEYNAME         Keyboard events (*)
 
@@ -274,7 +274,7 @@ An example:
 
     Every key can be bound to an action (see below). The format is:
     key_KEYNAME where KEYNAME is the name of the key as defined in
-    keysymdef.h (usually: /usr/include/X11/keysymdef.h).  The part 
+    keysymdef.h (usually: /usr/include/X11/keysymdef.h).  The part
     after 'XK_' in keysymdef.h must be used for KEYNAME.
 
 
@@ -304,9 +304,9 @@ An example:
     scrolldown:n        scroll slave window n lines down (default n=1)
     grabkeys            enable keyboard support
     ungrabkeys          disable keyboard support
-    grabmouse           enable mouse support 
+    grabmouse           enable mouse support
                         only needed with specific windowmanagers, such as fluxbox
-    ungrabmouse         release mouse 
+    ungrabmouse         release mouse
                         only needed with specific windowmanagers, such as fluxbox
 
 
@@ -348,7 +348,7 @@ An example:
 ^fg(#6fbf47)---------------------
 
 Nezd provides two menu modes, vertical and horizontal menus. You can
-access these modes by adding 'v'(ertical) or 'h'(orizontal) to the 
+access these modes by adding 'v'(ertical) or 'h'(orizontal) to the
 '-m' option. If nothing is specified nezd defaults to vertical menus.
 
 Vertical menu, both invocations are equivalent:
@@ -416,9 +416,9 @@ Graphics:
 ---------
 
     ^^i(path)           draw icon specified by path
-                       Supported formats: XBM and optionally XPM
+                       Supported formats: XBM and XPM
 
-    ^^r(WIDTHxHEIGHT)   draw a rectangle with the dimensions 
+    ^^r(WIDTHxHEIGHT)   draw a rectangle with the dimensions
                        WIDTH and HEIGHT
     ^^ro(WIDTHxHEIGHT)  rectangle outline
 
@@ -440,9 +440,9 @@ Other:
 ------
 
     ^^tw()              draw to title window
-                       This command has some annoyances, as only 
+                       This command has some annoyances, as only
                        the input after the command will be drawn
-                       to the title window, so it is best used 
+                       to the title window, so it is best used
                        only once and as first command per line
                        Subject to be improved in the future.
 
@@ -457,7 +457,7 @@ Other:
                        in order to position the input inside other already
                        drawn input.
 
-                       Example: 
+                       Example:
                          ^^ib(1)^^fg(red)^^ro(100x15)^^p(-98)^^fg(blue)^^r(20x10)^^fg(orange)^^p(3)^^r(40x10)^^p(4)^^fg(darkgreen)^^co(12)^^p(2)^^c(10)
                        Giving:
                          ^ib(1)^fg(red)^ro(100x15)^p(-98)^fg(blue)^r(20x10)^fg(orange)^p(3)^r(40x10)^p(4)^fg(darkgreen)^co(12)^p(2)^c(10)
@@ -465,12 +465,12 @@ Other:
 
 
 These commands can appear anywhere and in any combination in nezd's
-input. 
+input.
 
 The color can be specified either as symbolic name (e.g. red,
 darkgreen, etc.) or as #rrggbb hex-value (e.g. #ffffaa).
 
-Icons must be in the XBM or optionally XPM format, see the "bitmaps"
+Icons must be in the XBM or XPM format, see the "bitmaps"
 directory for some sample icons. With the standard "bitmap" application
 you can easily draw your own icons.
 
@@ -484,10 +484,10 @@ Doubling the '^^' character removes the special meaning from it.
 
 Some examples:
 
-   Input:  
+   Input:
           ^^fg(red)I'm red text ^^fg(blue)I am blue
 
-   Resulting in: 
+   Resulting in:
           ^fg(red)I'm red text ^fg(blue)I am blue
 
 
@@ -533,7 +533,7 @@ Some examples:
 ^fg(#6fbf47)---------
 
 ^co(4x4) Display message and timeout after 10 seconds:
-^fg(grey85)    (echo "This is a message"; sleep 10) | nezd -bg darkred -fg grey85 -fn fixed 
+^fg(grey85)    (echo "This is a message"; sleep 10) | nezd -bg darkred -fg grey85 -fn fixed
 
 
 ^co(4x4) Display message and never timeout:

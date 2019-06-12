@@ -43,7 +43,7 @@ Optionally if you want to use nezd's gadgets:
     make clean install
 
 
-Note:       By default nezd will not be compiled with Xinerama and XPM support.
+Note:       By default nezd will not be compiled with Xinerama and support.
             Uncomment the respective lines in config.mk to change this.
 
 Running nezd
@@ -399,7 +399,7 @@ Graphics:
 ---------
 
     ^i(path)           draw icon specified by path
-                       Supported formats: XBM and optionally XPM
+                       Supported formats: XBM and XPM
 
     ^r(WIDTHxHEIGHT)   draw a rectangle with the dimensions
                        WIDTH and HEIGHT
@@ -508,7 +508,7 @@ input.
 The color can be specified either as symbolic name (e.g. red,
 darkgreen, etc.) or as #rrggbb hex-value (e.g. #ffffaa).
 
-Icons must be in the XBM or optionally XPM format, see the "bitmaps"
+Icons must be in the XBM or XPM format, see the "bitmaps"
 directory for some sample icons. With the standard "bitmap" application
 you can easily draw your own icons.
 

@@ -18,48 +18,23 @@ INCS = -I. -I${X11INC}
 # Uncomment: Remove # from the beginning of respective lines
 # Comment  : Add # to the beginning of the respective lines
 
-## Option 1: No Xinerama no XPM no XFT
+## Option 1: No Xinerama no XFT
 #LIBS = -L${X11LIB} -lX11
 #CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\"
 
-
-## Option 2: No Xinerama with XPM
-#LIBS = -L${X11LIB} -lX11 -lXpm
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XPM
-
-
-# Option 3: With Xinerama no XPM
+# Option 2: With Xinerama
 #LIBS = -L${X11LIB} -lX11 -lXinerama
 #CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA
 
-
-## Option 4: With Xinerama and XPM
-#LIBS = -L${X11LIB} -lX11 -lXinerama -lXpm
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XPM
-
-
-## Option 5: With XFT
+## Option 3: With XFT
 #LIBS = -L${X11LIB} -lX11 `pkg-config --libs xft`
 #CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XFT `pkg-config --cflags xft`
 
-
-## Option 6: With XPM and XFT
-#LIBS = -L${X11LIB} -lX11 -lXpm `pkg-config --libs xft`
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XPM -DNEZD_XFT `pkg-config --cflags xft`
-
-
-## Option 7: With Xinerama and XFT
-#LIBS = -L${X11LIB} -lX11 -lXinerama `pkg-config --libs xft`
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XFT `pkg-config --cflags xft`
-
-
-## Option 8: With Xinerama and XPM and XFT
+## Option 4: With Xinerama and XFT
 LIBS = -L${X11LIB} -lX11 -lXinerama -lXpm `pkg-config --libs xft`
-CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XPM -DNEZD_XFT `pkg-config --cflags xft`
-
+CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XFT `pkg-config --cflags xft`
 
 # END of feature configuration
-
 
 LDFLAGS += ${LIBS}
 
@@ -73,5 +48,5 @@ LDFLAGS += ${LIBS}
 #LDFLAGS = ${LIBS}
 
 # compiler and linker
-CC ?= clang
+CC ?= cc
 LD = ${CC}

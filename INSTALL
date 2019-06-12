@@ -1,7 +1,3 @@
-==================================
- nezd, (c) 2007 by Robert Manea
-==================================
-
 
 Edit config.mk to match your local setup (nezd is installed into
 the /usr/local namespace by default).
@@ -18,7 +14,7 @@ Optionally if you want to use nezd's gadgets:
     make clean install
 
 
-Note:       By default nezd will not be compiled with Xinerama and XPM support.
+Note:       By default nezd will not be compiled with Xinerama support.
             Uncomment the respective lines in config.mk to change this.
 
 
