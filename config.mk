@@ -18,21 +18,13 @@ INCS = -I. -I${X11INC}
 # Uncomment: Remove # from the beginning of respective lines
 # Comment  : Add # to the beginning of the respective lines
 
-## Option 1: No Xinerama no XFT
+## Option 1: No Xinerama
 #LIBS = -L${X11LIB} -lX11
 #CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\"
 
-# Option 2: With Xinerama
-#LIBS = -L${X11LIB} -lX11 -lXinerama
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA
-
-## Option 3: With XFT
-#LIBS = -L${X11LIB} -lX11 `pkg-config --libs xft`
-#CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XFT `pkg-config --cflags xft`
-
-## Option 4: With Xinerama and XFT
+## Option 2: With Xinerama
 LIBS = -L${X11LIB} -lX11 -lXinerama -lXpm `pkg-config --libs xft`
-CFLAGS += -Wall -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA -DNEZD_XFT `pkg-config --cflags xft`
+CFLAGS += -Wall -Wextra -Os ${INCS} -DVERSION=\"${VERSION}\" -DNEZD_XINERAMA `pkg-config --cflags xft`
 
 # END of feature configuration
 
@@ -44,7 +36,7 @@ LDFLAGS += ${LIBS}
 #CFLAGS += -xtarget=ultra
 
 # Debugging
-#CFLAGS = ${INCS} -DVERSION=\"${VERSION}\" -std=gnu89 -pedantic -Wall -W -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wdisabled-optimization -O2 -pipe -DNEZD_XFT `pkg-config --cflags xft`
+#CFLAGS = ${INCS} -DVERSION=\"${VERSION}\" -std=gnu89 -pedantic -Wall -W -Wundef -Wendif-labels -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wdisabled-optimization -O2 -pipe `pkg-config --cflags xft`
 #LDFLAGS = ${LIBS}
 
 # compiler and linker

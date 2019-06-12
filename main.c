@@ -32,12 +32,10 @@ static void clean_up(void) {
   int i;
 
   free_event_list();
-#ifndef NEZD_XFT
   if (nezd.font.set)
     XFreeFontSet(nezd.dpy, nezd.font.set);
   else
     XFreeFont(nezd.dpy, nezd.font.xfont);
-#endif
 
   XFreePixmap(nezd.dpy, nezd.title_win.drawable);
   if (nezd.slave_win.max_lines) {
@@ -348,7 +346,6 @@ static void set_docking_ewmh_info(Display *dpy, Window w, int dock) {
 #endif
     strut[10] = wa.x;
     strut[11] = wa.x + wa.width - 1;
-
   }
 
   if (strut[2] != 0 || strut[3] != 0) {
@@ -1013,9 +1010,6 @@ int main(int argc, char *argv[]) {
     else if (!strncmp(argv[i], "-v", 3)) {
       printf("nezd-" VERSION);
       printf("Enabled optional features: "
-#ifdef NEZD_XFT
-             "XFT "
-#endif
 #ifdef NEZD_XINERAMA
              "XINERAMA "
 #endif

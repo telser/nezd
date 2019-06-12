@@ -1,9 +1,14 @@
 Nezd is a fork of dzen that aims to add polish and features.
 
-Changes from dzen currently include merging in existing patches adding:
-        1. Support for relative positioning
-        2. Manual pages
-        3. Bug and documentation fixes
+Changes from dzen
+-----------------
+
+- Merge in existing patches adding:
+  * Support for relative positioning
+  * Manual page
+  * Bug and documentation fixes
+
+-
 
 Nezd is a general purpose messaging, notification and menuing program for X11.
 It was designed to be fast, tiny and scriptable in any language.
@@ -12,18 +17,18 @@ It was designed to be fast, tiny and scriptable in any language.
 Features
 --------
 
-    * Small, fast, very tiny set of dependencies (Xlib only by default)
+    * Small, fast, very tiny set of dependencies (Xlib, XPM, and XFT only by default)
     * Scriptable in any language
     * Sophisticated formating language - including colours, icons, graphics
     * Versatile - display all sorts of information
     * Interactive - user defined mouse and keyboard actions
-    * Optional XFT support
+    * XFT support
     * Optional XINERAMA support
 
 
 Requirements
 ------------
-In order to build nezd you need the Xlib header files.
+In order to build nezd you need the Xlib, XPM and Xft header files.
 
 
 Installation

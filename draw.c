@@ -8,10 +8,10 @@
 #include "action.h"
 #include "nezd.h"
 
+#include <X11/xpm.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <X11/xpm.h>
 
 #define ARGLEN 256
 #define MAX_ICON_CACHE 32
@@ -71,22 +71,13 @@ enum sctype { LOCK_X, UNLOCK_X, TOP, BOTTOM, CENTER, LEFT, RIGHT };
 int get_tokval(const char *line, char **retdata);
 int get_token(const char *line, int *t, char **tval);
 
-static unsigned int textnw(Fnt *font, const char *text, unsigned int len) {
-#ifndef NEZD_XFT
-  XRectangle r;
-
-  if (font->set) {
-    XmbTextExtents(font->set, text, len, NULL, &r);
-    return r.width;
-  }
-  return XTextWidth(font->xfont, text, len);
-#else
+static unsigned int textnw(const char *text) {
   XftTextExtentsUtf8(nezd.dpy, nezd.font.xftfont, (unsigned const char *)text,
                      strlen(text), nezd.font.extents);
-  if (nezd.font.extents->height > nezd.font.height)
+  if (nezd.font.extents->height > nezd.font.height) {
     nezd.font.height = nezd.font.extents->height;
+  }
   return nezd.font.extents->xOff;
-#endif
 }
 
 void drawtext(const char *text, int reverse, int line, int align) {
@@ -116,57 +107,22 @@ long getcolor(const char *colstr) {
 }
 
 void setfont(const char *fontstr) {
-#ifndef NEZD_XFT
-  char *def, **missing;
-  int i, n;
-
-  missing = NULL;
-  if (nezd.font.set)
-    XFreeFontSet(nezd.dpy, nezd.font.set);
-
-  nezd.font.set = XCreateFontSet(nezd.dpy, fontstr, &missing, &n, &def);
-  if (missing)
-    XFreeStringList(missing);
-
-  if (nezd.font.set) {
-    XFontSetExtents *font_extents;
-    XFontStruct **xfonts;
-    char **font_names;
-    nezd.font.ascent = nezd.font.descent = 0;
-    font_extents = XExtentsOfFontSet(nezd.font.set);
-    n = XFontsOfFontSet(nezd.font.set, &xfonts, &font_names);
-    for (i = 0, nezd.font.ascent = 0, nezd.font.descent = 0; i < n; i++) {
-      if (nezd.font.ascent < (*xfonts)->ascent)
-        nezd.font.ascent = (*xfonts)->ascent;
-      if (nezd.font.descent < (*xfonts)->descent)
-        nezd.font.descent = (*xfonts)->descent;
-      xfonts++;
-    }
-  } else {
-    if (nezd.font.xfont)
-      XFreeFont(nezd.dpy, nezd.font.xfont);
-    nezd.font.xfont = NULL;
-    if (!(nezd.font.xfont = XLoadQueryFont(nezd.dpy, fontstr)))
-      eprint("nezd: error, cannot load font: '%s'\n", fontstr);
-    nezd.font.ascent = nezd.font.xfont->ascent;
-    nezd.font.descent = nezd.font.xfont->descent;
-  }
-  nezd.font.height = nezd.font.ascent + nezd.font.descent;
-#else
-  if (nezd.font.xftfont)
+  if (nezd.font.xftfont) {
     XftFontClose(nezd.dpy, nezd.font.xftfont);
+  }
   nezd.font.xftfont = XftFontOpenXlfd(nezd.dpy, nezd.screen, fontstr);
-  if (!nezd.font.xftfont)
+  if (!nezd.font.xftfont) {
     nezd.font.xftfont = XftFontOpenName(nezd.dpy, nezd.screen, fontstr);
-  if (!nezd.font.xftfont)
+  }
+  if (!nezd.font.xftfont) {
     eprint("error, cannot load font: '%s'\n", fontstr);
+  }
   nezd.font.extents = malloc(sizeof(XGlyphInfo));
   XftTextExtentsUtf8(nezd.dpy, nezd.font.xftfont,
                      (unsigned const char *)fontstr, strlen(fontstr),
                      nezd.font.extents);
   nezd.font.height = nezd.font.xftfont->ascent + nezd.font.xftfont->descent;
   nezd.font.width = (nezd.font.extents->width) / strlen(fontstr);
-#endif
 }
 
 int get_tokval(const char *line, char **retdata) {
@@ -369,9 +325,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
   /* X stuff */
   long lastfg = nezd.norm[ColFG], lastbg = nezd.norm[ColBG];
   Fnt *cur_fnt = NULL;
-#ifndef NEZD_XFT
-  XGCValues gcv;
-#endif
   Drawable pm = 0, bm;
   int free_xpm_attrib = 0;
   Pixmap xpm_pm;
@@ -381,7 +334,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
   /* icon cache */
   int ip;
 
-#ifdef NEZD_XFT
   XftDraw *xftd = NULL;
   XftColor xftc;
   char *xftcs;
@@ -390,7 +342,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
   /* set default fg/bg for XFT */
   xftcs = estrdup(nezd.fg);
   xftcs_bg = estrdup(nezd.bg);
-#endif
 
   /* parse line and return the text without control commands */
   if (nodraw) {
@@ -420,17 +371,13 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
                         DefaultDepth(nezd.dpy, nezd.screen));
     }
 
-#ifdef NEZD_XFT
     xftd = XftDrawCreate(nezd.dpy, pm, DefaultVisual(nezd.dpy, nezd.screen),
                          DefaultColormap(nezd.dpy, nezd.screen));
-#endif
 
     if (!reverse) {
       XSetForeground(nezd.dpy, nezd.tgc, nezd.norm[ColBG]);
       xpms.pixel = nezd.norm[ColBG];
-#ifdef NEZD_XFT
       xftcs_bg = estrdup(nezd.bg);
-#endif
     } else {
       XSetForeground(nezd.dpy, nezd.tgc, nezd.norm[ColFG]);
       xpms.pixel = nezd.norm[ColFG];
@@ -453,12 +400,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
     xpma.numsymbols = 1;
     xpma.valuemask = XpmColormap | XpmDepth | XpmVisual | XpmColorSymbols;
 
-#ifndef NEZD_XFT
-    if (!nezd.font.set) {
-      gcv.font = nezd.font.xfont->fid;
-      XChangeGC(nezd.dpy, nezd.tgc, GCFont, &gcv);
-    }
-#endif
     cur_fnt = &nezd.font;
 
     if (lnr != -1 &&
@@ -513,10 +454,9 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
                 XFreePixmap(nezd.dpy, bm);
                 px += !pos_is_fixed ? bm_w : 0;
                 max_y = MAX(max_y, y + bm_h);
-              }
-              else if (XpmReadFileToPixmap(nezd.dpy, nezd.title_win.win, tval,
-                                           &xpm_pm, NULL,
-                                           &xpma) == XpmSuccess) {
+              } else if (XpmReadFileToPixmap(nezd.dpy, nezd.title_win.win, tval,
+                                             &xpm_pm, NULL,
+                                             &xpma) == XpmSuccess) {
                 setcolor(&pm, px, xpma.width, lastfg, lastbg, reverse, nobg);
 
                 if (MAX_ICON_CACHE)
@@ -670,47 +610,28 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
 
           case bg:
             lastbg = tval[0] ? (unsigned)getcolor(tval) : nezd.norm[ColBG];
-#ifdef NEZD_XFT
-            if (xftcs_bg)
+            if (xftcs_bg) {
               free(xftcs_bg);
+            }
             xftcs_bg = estrdup(tval[0] ? tval : nezd.bg);
-#endif
 
             break;
 
           case fg:
             lastfg = tval[0] ? (unsigned)getcolor(tval) : nezd.norm[ColFG];
             XSetForeground(nezd.dpy, nezd.tgc, lastfg);
-#ifdef NEZD_XFT
-            if (xftcs)
+            if (xftcs) {
               free(xftcs);
+            }
             xftcs = estrdup(tval[0] ? tval : nezd.fg);
-#endif
             break;
 
           case fn:
             if (tval[0]) {
-#ifndef NEZD_XFT
-              if (!strncmp(tval, "dfnt", 4)) {
-                cur_fnt = &(nezd.fnpl[atoi(tval + 4)]);
-
-                if (!cur_fnt->set) {
-                  gcv.font = cur_fnt->xfont->fid;
-                  XChangeGC(nezd.dpy, nezd.tgc, GCFont, &gcv);
-                }
-              } else
-#endif
-                setfont(tval);
+              setfont(tval);
             } else {
               cur_fnt = &nezd.font;
-#ifndef NEZD_XFT
-              if (!cur_fnt->set) {
-                gcv.font = cur_fnt->xfont->fid;
-                XChangeGC(nezd.dpy, nezd.tgc, GCFont, &gcv);
-              }
-#else
               setfont(nezd.fnt ? nezd.fnt : FONT);
-#endif
             }
             py = set_posy ? py : (nezd.line_height - cur_fnt->height) / 2;
             font_was_set = 1;
@@ -757,12 +678,12 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
         }
 
         /* check if text is longer than window's width */
-        tw = textnw(cur_fnt, lbuf, strlen(lbuf));
+        tw = textnw(lbuf);
         while ((((tw + px) > (nezd.w)) ||
                 (block_align != -1 && tw > block_width)) &&
                j >= 0) {
           lbuf[--j] = '\0';
-          tw = textnw(cur_fnt, lbuf, strlen(lbuf));
+          tw = textnw(lbuf);
         }
 
         opx = px;
@@ -782,14 +703,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
         if (!nobg)
           setcolor(&pm, px, tw, lastfg, lastbg, reverse, nobg);
 
-#ifndef NEZD_XFT
-        if (cur_fnt->set)
-          XmbDrawString(nezd.dpy, pm, cur_fnt->set, nezd.tgc, px,
-                        py + cur_fnt->ascent, lbuf, strlen(lbuf));
-        else
-          XDrawString(nezd.dpy, pm, nezd.tgc, px, py + nezd.font.ascent, lbuf,
-                      strlen(lbuf));
-#else
         if (reverse) {
           XftColorAllocName(nezd.dpy, DefaultVisual(nezd.dpy, nezd.screen),
                             DefaultColormap(nezd.dpy, nezd.screen), xftcs_bg,
@@ -803,7 +716,6 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
         XftDrawStringUtf8(xftd, &xftc, cur_fnt->xftfont, px,
                           py + nezd.font.xftfont->ascent, (const FcChar8 *)lbuf,
                           strlen(lbuf));
-#endif
 
         max_y = MAX(max_y, py + nezd.font.height);
 
@@ -887,17 +799,13 @@ char *parse_line(const char *line, int lnr, int align, int reverse,
       XpmFreeAttributes(&xpma);
     }
 
-#ifdef NEZD_XFT
     XftDrawDestroy(xftd);
-#endif
   }
 
-#ifdef NEZD_XFT
   if (xftcs)
     free(xftcs);
   if (xftcs_bg)
     free(xftcs_bg);
-#endif
 
   return nodraw ? rbuf : NULL;
 }

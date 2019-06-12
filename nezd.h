@@ -10,9 +10,7 @@
 #ifdef NEZD_XINERAMA
 #include <X11/extensions/Xinerama.h>
 #endif
-#ifdef NEZD_XFT
 #include <X11/Xft/Xft.h>
-#endif
 
 #define FONT "-*-fixed-*-*-*-*-*-*-*-*-*-*-*-*"
 #define BGCOLOR "#111111"
@@ -69,11 +67,9 @@ struct Fnt {
   int ascent;
   int descent;
   int height;
-#ifdef NEZD_XFT
   XftFont *xftfont;
   XGlyphInfo *extents;
   int width;
-#endif
 };
 
 /* clickable areas */

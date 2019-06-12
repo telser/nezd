@@ -97,9 +97,10 @@ void fdbar(Dbar *dbar, FILE *stream) {
       fprintf(stream, "%s^ib(1)", dbar->label ? dbar->label : "");
       if (dbar->segb == 0) {
         // fprintf(stream,
-        // "^fg(%s)^r(%dx%d+%d-%d)^fg(%s)^p(-%d)^r(%dx%d+%d-%d)", 		dbar->bg,
-        //dbar->segw, dbar->height, 0, dbar->height+1, 		dbar->fg, dbar->segw,
-        //dbar->segw, (int)l, 0, (int)l+1);
+        // "^fg(%s)^r(%dx%d+%d-%d)^fg(%s)^p(-%d)^r(%dx%d+%d-%d)",
+        // dbar->bg,
+        // dbar->segw, dbar->height, 0, dbar->height+1, dbar->fg, dbar->segw,
+        // dbar->segw, (int)l, 0, (int)l+1);
         fprintf(stream, "^fg(%s)^r(%dx%d)^fg(%s)^r(%dx%d-%d+%d)", dbar->bg,
                 dbar->segw, dbar->height, dbar->fg, dbar->segw, (int)l,
                 dbar->segw, (int)((dbar->height - l) / 2.0 + .5));
