@@ -83,8 +83,6 @@ nezd accepts a couple of options:
     -l      lines,  ^fg(#6fbf47)see (1)
     -e      events and actions, ^fg(#6fbf47)see (2)
     -m      menu mode, ^fg(#6fbf47)see (3)
-    -u      update contents of title and
-            slave window simultaneously, ^fg(#6fbf47)see (4)
     -p      persist EOF (optional timeout in seconds)
     -x      x position (can be relative with %)
     -y      y position (can be relative with %)
@@ -93,7 +91,7 @@ nezd accepts a couple of options:
     -xs     number of Xinerama screen
     -v      version information
 
-    ^fg(#6fbf47)see (5)^fg(), for the in-text formating language.
+    ^fg(#6fbf47)see (4)^fg(), for the in-text formating language.
 
 
 
@@ -130,7 +128,7 @@ Nezd's window layout is as follows:
 
 The first line you provide to nezd always goes to the title window,
 all other consecutive lines will be drawn to the slave window unless
-you explicitly override this with the ^fg(#6fbf47)(5) In-text formating language
+you explicitly override this with the ^fg(#6fbf47)(4) In-text formating language
 ^fg()command ^^tw().
 
 
@@ -160,22 +158,18 @@ A3:  There are 2 different approaches nezd uses to terminate itself,
 Q4:  Ok, the title and slave thing works, can I update the
      contents of both windows at the same time?
 
-A4:  Sure, see ^fg(#6fbf47)(4) Simultaneous updates ^fg()or use the in-text
-     command ^^tw() to explicitly draw to the title window.
-     See ^fg(#6fbf47)(5) In-Text formating language ^fg()for further details
+A4:  Sure, use the in-text command ^^tw() to explicitly draw to the title window.
+     See ^fg(#6fbf47)(4) In-Text formating language ^fg()for further details
 
 Q5:  Can I change color of my input at runtime?
 
 A5:  Yes, you can change both background and foreground colors and
-     much more See ^fg(#6fbf47)(5) In-Text formating language^fg().
-
+     much more See ^fg(#6fbf47)(4) In-Text formating language^fg().
 
 Q6:  Can I use nezd as a menu?
 
 A6:  Yes, both vertical and horizontal menus are supported.
      See ^fg(#6fbf47)(3) Menu ^fg()for further details.
-
-
 
 
 ^fg(#6fbf47)Termination:
@@ -191,15 +185,11 @@ nezd uses two different approaches to terminate itself:
         - this is the default behaviour, ^fg(#6fbf47)see (2)
         - in some modes the Escape key terminates too, ^fg(#6fbf47)see (2)
 
-
-
 ^fg(#6fbf47)Return values:
 ^fg(#6fbf47)--------------
 0               -   nezd received EOF
 1               -   some error occurred, inspect the error message
 user defined    -   set with 'exit:retval' action, ^fg(#6fbf47)see (2)
-
-
 
 ^fg(#6fbf47)(1) Option "-l": Slave window
 ^fg(#6fbf47)--------------------------------
@@ -367,35 +357,7 @@ All actions beginning with "menu" work on the selected menu entry.
         ^fg(Khaki)affecting the title window will be silently discarded
         ^fg(Khaki)in this mode.
 
-
-
-^fg(#6fbf47)(4) Option '-u', Simultaneous updates
-^fg(#6fbf47)-------------------------------------
-
-This option provides facilities to update the title and slave window at
-the same time.
-
-The way it works is best described by an example:
-
-  Motivation:
-
-  We want to display an updating clock in the title and some log
-  output in the slave window.
-
-  Solution:
-
-  ^fg(grey70)while true; do
-        ^fg(grey70)date                # output goes to the title window
-        ^fg(grey70)dmesg | tail -n 10  # output goes to the slave window
-        ^fg(grey70)sleep 1
-  ^fg(grey70)done | nezd -l 10 -u
-
-For this to work correctly it is essential to provide exactly the number
-of lines to the slave window as defined by the parameter to '-l'.
-
-
-
-^fg(#6fbf47)(5) In-text formating language:
+^fg(#6fbf47)(4) In-text formating language:
 ^fg(#6fbf47)-------------------------------
 
 This feature allows to dynamically (at runtime) format the text nezd

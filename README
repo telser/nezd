@@ -9,10 +9,10 @@ Changes from dzen
   * Bug and documentation fixes
 
 - Xft, Xinerama, and Xpm are now required
+- Removed deprecated '-u' flag
 
 Nezd is a general purpose messaging, notification and menuing program for X11.
 It was designed to be fast, tiny and scriptable in any language.
-
 
 Features
 --------
@@ -58,8 +58,6 @@ nezd accepts a couple of options:
     -l      lines, see (1)
     -e      events and actions, see (2)
     -m      menu mode, see (3)
-    -u      update contents of title and
-            slave window simultaneously, see (4)
     -p      persist EOF (optional timeout in seconds)
     -x      x position (can be relative with %)
     -y      y position (can be relative with %)
@@ -68,7 +66,7 @@ nezd accepts a couple of options:
     -xs     number of Xinerama screen
     -v      version information
 
-    see (5) for the in-text formating language.
+    see (4) for the in-text formating language.
 
 X resources
 -----------
@@ -102,7 +100,7 @@ Nezd's window layout is as follows:
 
 The first line you provide to nezd always goes to the title window,
 all other consecutive lines will be drawn to the slave window unless
-you explicitly override this with the (5) In-text formating language
+you explicitly override this with the (4) In-text formating language
 command ^tw().
 
 
@@ -132,15 +130,14 @@ A3:  There are 2 different approaches nezd uses to terminate itself,
 Q4:  Ok, the title and slave thing works, can I update the
      contents of both windows at the same time?
 
-A4:  Sure, see "(4) Simultaneous updates" or use the in-text
-     command "^tw()" to explicitly draw to the title window.
-     See section (5) for further details
+A4:  Use the in-text command "^tw()" to explicitly draw to the title window.
+     See section (4) for further details
 
 
 Q5:  Can I change color of my input at runtime?
 
 A5:  Yes, you can change both background and foreground colors and
-     much more See "(5) In-Text formating language"
+     much more See "(4) In-Text formating language"
 
 
 Q6:  Can I use nezd as a menu?
@@ -325,33 +322,7 @@ Note:   Menu mode only makes sense if '-l <n>' is specified!
         affecting the title window will be silently discarded
         in this mode.
 
-(4) Option '-u', Simultaneous updates
--------------------------------------
-
-** DEPRECATED **
-
-This option provides facilities to update the title and slave window at
-the same time.
-
-The way it works is best described by an example:
-
-  Motivation:
-
-  We want to display an updating clock in the title and some log
-  output in the slave window.
-
-  Solution:
-
-  while true; do
-        date                # output goes to the title window
-        dmesg | tail -n 10  # output goes to the slave window
-        sleep 1
-  done | nezd -l 10 -u
-
-For this to work correctly it is essential to provide exactly the number
-of lines to the slave window as defined by the parameter to '-l'.
-
-(5) In-text formating & control language:
+(4) In-text formating & control language:
 -----------------------------------------
 
 This feature allows to dynamically (at runtime) format the text nezd

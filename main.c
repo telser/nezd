@@ -138,12 +138,11 @@ static int read_stdin(void) {
       return -2;
   } else {
     while ((n_off = chomp(buf, retbuf, n_off, n))) {
-      if (!nezd.slave_win.ishmenu && nezd.tsupdate &&
-          nezd.slave_win.max_lines &&
+      if (!nezd.slave_win.ishmenu && nezd.slave_win.max_lines &&
           ((nezd.cur_line == 0) ||
            !(nezd.cur_line % (nezd.slave_win.max_lines + 1))))
         drawheader(retbuf);
-      else if (!nezd.slave_win.ishmenu && !nezd.tsupdate &&
+      else if (!nezd.slave_win.ishmenu &&
                ((nezd.cur_line == 0) || !nezd.slave_win.max_lines))
         drawheader(retbuf);
       else
@@ -573,18 +572,14 @@ static void x_map_window(Window win) {
 static void x_redraw(Window w) {
   int i;
 
-  if (!nezd.slave_win.ishmenu && w == nezd.title_win.win)
+  if (!nezd.slave_win.ishmenu && w == nezd.title_win.win) {
     drawheader(NULL);
-  if (!nezd.tsupdate && w == nezd.slave_win.win) {
-    for (i = 0; i < nezd.slave_win.max_lines; i++)
+  }
+  for (i = 0; i < nezd.slave_win.max_lines; i++) {
+    if (w == nezd.slave_win.line[i]) {
       XCopyArea(nezd.dpy, nezd.slave_win.drawable[i], nezd.slave_win.line[i],
                 nezd.gc, 0, 0, nezd.slave_win.width, nezd.line_height, 0, 0);
-  } else {
-    for (i = 0; i < nezd.slave_win.max_lines; i++)
-      if (w == nezd.slave_win.line[i]) {
-        XCopyArea(nezd.dpy, nezd.slave_win.drawable[i], nezd.slave_win.line[i],
-                  nezd.gc, 0, 0, nezd.slave_win.width, nezd.line_height, 0, 0);
-      }
+    }
   }
 }
 
@@ -841,7 +836,6 @@ int main(int argc, char *argv[]) {
   nezd.slave_win.max_lines = 0;
   nezd.running = True;
   nezd.xinescreen = 0;
-  nezd.tsupdate = 0;
   nezd.line_height = 0;
   nezd.title_win.expand = noexpand;
 
@@ -878,8 +872,6 @@ int main(int argc, char *argv[]) {
         if (t & HeightValue)
           geometry.height = th;
       }
-    } else if (!strncmp(argv[i], "-u", 3)) {
-      nezd.tsupdate = True;
     } else if (!strncmp(argv[i], "-expand", 8)) {
       if (++i < argc) {
         switch (argv[i][0]) {
@@ -995,16 +987,13 @@ int main(int argc, char *argv[]) {
              "<l|c|r>]\n"
              "             [-x <pixel|percent%>] [-y <pixel|percent%>] [-w "
              "<pixel|percent%>]\n"
-             "             [-h <pixel|percent%>] [-tw <pixel|percent%>] [-u]\n"
+             "             [-h <pixel|percent%>] [-tw <pixel|percent%>]\n"
              "             [-e <string>] [-l <lines>]  [-fn <font>] [-bg "
              "<color>] [-fg <color>]\n"
              "             [-geometry <geometry string>] [-expand "
              "<left|right>] [-dock]\n"
              "             [-title-name <string>] [-slave-name <string>]\n"
              "             [-xs <screen>]\n");
-
-  if (nezd.tsupdate && !nezd.slave_win.max_lines)
-    nezd.tsupdate = False;
 
   if (!geometry.title_width) {
     geometry.title_width = geometry.width;
