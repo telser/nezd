@@ -1,6 +1,3 @@
-# nezd
-#   (C)opyright MMVII Robert Manea
-
 include config.mk
 
 SRC = draw.c main.c util.c action.c
@@ -27,6 +24,8 @@ nezd: ${OBJ}
 	@strip $@
 	@echo "Run ./help for documentation"
 
+gadgets: $(MAKE) -C gadgets
+
 clean:
 	@echo cleaning
 	@rm -f nezd ${OBJ} nezd-${VERSION}.tar.gz
@@ -51,9 +50,15 @@ install: all
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	@cp -f nezd.1 ${DESTDIR}${MANPREFIX}/man1/nezd.1
 
+install-gadgets: gadgets
+	$(MAKE) -c gadgets install
+
+uninstall-gadgets: gadgets
+	$(MAKE) -c gadgets uninstall
+
 uninstall:
 	@echo removing executable file from ${DESTDIR}${PREFIX}/bin
 	@rm -f ${DESTDIR}${PREFIX}/bin/nezd
 	@rm -f ${DESTDIR}${MANPREFIX}/man1/nezd.1
 
-.PHONY: all options clean dist install uninstall
+.PHONY: all options clean dist install uninstall gadgets install-gadgets uninstall-gadgets
